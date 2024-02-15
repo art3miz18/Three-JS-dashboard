@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+
+
 export const addInteraction = (renderer, camera, scene, object) => {
     let isDragging = false;
     let previousMousePosition = {

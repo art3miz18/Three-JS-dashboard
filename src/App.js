@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { setupScene } from './three/setupScene';
 import { loadModel } from './three/loadModel';
-import { addInteraction } from './three/handleInteractions';
+
 
 function App() {
   const mountRef = useRef(null);
@@ -14,7 +14,6 @@ function App() {
     const modelPath = '/models/toyota_supra_dekztrax_persephone_34.glb';
     loadModel(scene, modelPath, (model) => {
       // Once the model is loaded, add interaction capabilities
-      addInteraction(renderer, camera, scene, model);
       
       // If needed, adjust model position
       model.position.set(0, -1, 0);
