@@ -11,3 +11,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#root {
+  /* Basic styling */
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Highlight drop zone on drag over */
+.drag-over {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  border: 2px dashed #007bff; /* Bootstrap info blue */
+  background-color: rgba(0, 123, 255, 0.1); /* Light blue background */
+} 
