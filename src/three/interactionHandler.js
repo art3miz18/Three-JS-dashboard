@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {scene, camera} from './setupScene';
+// import {scene, camera} from './setupScene';
 
 
 export function setupInteractionHandler(scene, camera, renderer) {
@@ -13,6 +13,12 @@ export function setupInteractionHandler(scene, camera, renderer) {
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
+        checkIntersections();
+    }
+    
+    function checkIntersections(){
+        
+        raycaster.layers.set(0);
         // Update the picking ray with the camera and mouse position
         raycaster.setFromCamera(mouse, camera);
 
@@ -22,9 +28,9 @@ export function setupInteractionHandler(scene, camera, renderer) {
         if (intersects.length > 0) {
             // Assuming the first intersected object is the target
             const intersect = intersects[0];
-
             // Create a sphere and position it at the intersection point
             const sphere = new THREE.Mesh(geometry, material);
+            // Position it at the intersection point
             sphere.position.copy(intersect.point);
             scene.add(sphere);
         }
