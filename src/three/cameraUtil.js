@@ -26,7 +26,6 @@ export const adjustCameraToFitObject = (scene, camera, object, controls) => {
         controls.target.set(center.x, center.y, center.z);
         controls.update();
     }
-
     camera.lookAt(center);
 };
 

@@ -3,7 +3,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
 let controls;
-let textureEquirec; // enviornmentMap
 
 export const setupScene = () => {
   const scene = new THREE.Scene();
