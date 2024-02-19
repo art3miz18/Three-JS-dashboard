@@ -1,8 +1,6 @@
 import React, { useEffect, useRef , useState} from 'react';
 import { setupScene } from './three/setupScene';
 import DragAndDrop from './three/dragAndDrop';
-// import { loadModel,loadModelFromFile } from './three/loadModel';
-import { setupInteractionHandler } from './three/interactionHandler';
 
 
 function App() {
@@ -23,13 +21,9 @@ function App() {
       renderer.render(scene, camera);
     };
     animate();
-    // Setup interaction handler, passing necessary objects
-    
-    const cleanupInteraction = setupInteractionHandler(scene, camera, renderer);
 
     // Cleanup function to remove the renderer from the DOM and clear event listeners
-    return () => {
-      cleanupInteraction(); // Call the cleanup from interactionHandler      
+    return () => {           
       mountRef.current.removeChild(renderer.domElement);
     };
   }, []);

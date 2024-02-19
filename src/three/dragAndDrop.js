@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { setupScene } from './setupScene';
 import { loadModelFromFile } from './loadModel';
+import { setupInteractionHandler } from './interactionHandler';
 
-const DragAndDrop = ({ onModelLoaded, scene, camera, controls }) => {
+const DragAndDrop = ({ onModelLoaded, scene, camera, controls, renderer }) => {
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
@@ -13,18 +15,19 @@ const DragAndDrop = ({ onModelLoaded, scene, camera, controls }) => {
         loadModelFromFile(file, camera, scene, controls);
         if (onModelLoaded) onModelLoaded();
       }
-    };
+    }; 
 
     const handleDragOver = (event) => {
       event.preventDefault();
-      setIsDragging(true);
+      setIsDragging(true); 
     };
 
     const handleDragLeave = (event) => {
       event.preventDefault();
-      setIsDragging(false);
+      setIsDragging(false); 
     };
-
+    // const {renderer} = setupScene();
+    const cleanupInteraction = setupInteractionHandler(scene, camera, renderer);
     // Add event listeners to the document
     document.addEventListener('dragover', handleDragOver);
     document.addEventListener('dragleave', handleDragLeave);
@@ -35,6 +38,7 @@ const DragAndDrop = ({ onModelLoaded, scene, camera, controls }) => {
       document.removeEventListener('dragover', handleDragOver);
       document.removeEventListener('dragleave', handleDragLeave);
       document.removeEventListener('drop', handleDrop);
+      cleanupInteraction();
     };
   }, [scene, camera, controls, onModelLoaded]);
 
