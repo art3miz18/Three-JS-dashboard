@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { setupScene } from './setupScene';
 import { loadModelFromFile } from './loadModel';
 import { setupInteractionHandler } from './interactionHandler';
 
@@ -26,7 +25,7 @@ const DragAndDrop = ({ onModelLoaded, scene, camera, controls, renderer }) => {
       event.preventDefault();
       setIsDragging(false); 
     };
-    // const {renderer} = setupScene();
+
     const cleanupInteraction = setupInteractionHandler(scene, camera, renderer);
     // Add event listeners to the document
     document.addEventListener('dragover', handleDragOver);
