@@ -18,7 +18,8 @@ const AnnotationPanel = ({ onModelLoaded }) => {
   return (
     <div className="annotation-panel">
       <input type="file" id="fileInput" style={{ display: 'none' }} onChange={handleFileChange} />
-      <button onClick={() => document.getElementById('fileInput').click()}>Add 3D Model</button>
+      {/* uncomment to add files through files browser */}
+      {/* <button onClick={() => document.getElementById('fileInput').click()}>Add 3D Model</button> */}
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
