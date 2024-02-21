@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { loadModelFromFile } from './loadModel';
 import { setupInteractionHandler } from './interactionHandler';
 
 const DragAndDrop = ({ onModelLoaded, scene, camera, controls, renderer }) => {
   const [isDragging, setIsDragging] = useState(false);  
-  const [fileLoaded, setFileLoaded] = useState(false);
+  const [fileLoaded, setFileLoaded] = useState(false);  
+  const cleanupInteractionRef = useRef(null);
+  
 
   useEffect(() => {
     const handleDrop = (event) => {
@@ -12,14 +14,14 @@ const DragAndDrop = ({ onModelLoaded, scene, camera, controls, renderer }) => {
       setIsDragging(false);
       const file = event.dataTransfer.files[0];
       if (file) {
-        loadModelFromFile(file, camera, scene, controls,()=>{
-          // console.log('Model has been loaded!');
+        loadModelFromFile(file, camera, scene, controls,(loadedModel)=>{
           setFileLoaded(true);
+          cleanupInteractionRef.current = setupInteractionHandler(scene, camera, renderer, loadedModel);
         });
         if (onModelLoaded) onModelLoaded();
       }
     }; 
-
+    
     const handleDragOver = (event) => {
       event.preventDefault();
       setIsDragging(true);
@@ -37,7 +39,6 @@ const DragAndDrop = ({ onModelLoaded, scene, camera, controls, renderer }) => {
       setFileLoaded(true); 
     };
 
-    const cleanupInteraction = setupInteractionHandler(scene, camera, renderer);
     // Add event listeners to the document
     document.addEventListener('dragover', handleDragOver);
     // document.addEventListener('dragleave', handleDragLeave);
@@ -50,7 +51,9 @@ const DragAndDrop = ({ onModelLoaded, scene, camera, controls, renderer }) => {
       // document.removeEventListener('dragleave', handleDragLeave);
       document.removeEventListener('drop', handleDrop);      
       document.removeEventListener('dragend', handleDragEnd);
-      cleanupInteraction();
+      if (cleanupInteractionRef.current) {
+        cleanupInteractionRef.current();
+      }
     };
   }, [scene, camera, controls, onModelLoaded]);
 
