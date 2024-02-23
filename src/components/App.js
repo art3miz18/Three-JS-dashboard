@@ -1,5 +1,6 @@
 import React, { useEffect, useRef , useState} from 'react';
 import AnnotationPanel  from './annotationPanel';
+import AnnotationForm  from './AnnotationForm';
 import { setupScene } from '../three/setupScene';
 import { loadModelFromFile } from '../three/loadModel';
 import DragAndDrop from '../three/dragAndDrop';
@@ -9,6 +10,8 @@ function App() {
   const mountRef = useRef(null);
   const [threeObjects, setThreeObjects] = useState({ scene: null, camera: null, renderer: null, controls: null });
   const [initialized, setInitialized] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [selectedPoint, setSelectedPoint] = useState(null);
   
   const handleModelLoaded = (file) =>{
     if (threeObjects.scene && threeObjects.camera && threeObjects.controls) {
@@ -16,6 +19,10 @@ function App() {
     }
   };
 
+  const handlePointClick = (point) => {
+    setSelectedPoint(point);
+    setShowForm(true);
+  };
 
   useEffect(() => {
     
@@ -53,8 +60,15 @@ function App() {
   return <div ref={mountRef} style={{ width: '100vw', height: '100vh' }}>
     { initialized && (
         <>
-          <DragAndDrop {...threeObjects} onModelLoaded={handleModelLoaded} />
+          <DragAndDrop {...threeObjects} onModelLoaded={handleModelLoaded} handlePointClick={handlePointClick}/>          
           <AnnotationPanel onModelLoaded={handleModelLoaded} />
+          {showForm && (
+            <AnnotationForm
+              selectedPoint={selectedPoint}
+              onCancel={() => setShowForm(false)}
+            />
+          )}
+          {/* <InteractionHandler onPointClick={handlePointClick} /> */}
         </>
       )}
   </div>;

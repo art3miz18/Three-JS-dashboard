@@ -27,7 +27,12 @@ export const loadModelFromFile = (file,camera, scene, controls, onModelLoadedCal
     loader.parse(event.target.result, '', (gltf) => {
       // console.log("event target ",event.target.result);
       const model = gltf.scene;
-      model.userData.IsProduct = true;
+      // model.userData.IsProduct = true;
+      model.traverse((child) => {
+        if (child.isMesh) {
+          child.userData.IsProduct = true;
+        }
+      });
       scene.add(model);
       console.log(' checking for product tag', model.userData);
       // Additional setup like adjusting the camera can go here

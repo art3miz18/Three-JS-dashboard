@@ -1,18 +1,18 @@
 import * as THREE from 'three';
 import { createBoundingBox } from './cameraUtil';
-import { setupPointInteraction } from './pointInteraction';
 
 
-export function setupInteractionHandler(scene, camera, renderer, model) {
+export function setupInteractionHandler(scene, camera, renderer, model, handlePointClick) {
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5});
     const { size } = createBoundingBox(model, scene); // get size from bounding box
     const scale = Math.max(size.x, size.y, size.z) * 0.01; // scale factor based on model size
 
     let isDragging = false;
-    let currentlyHoveredPoint = null;
+    let highlightMesh = null;
+    let HIGHLIGHT_LAYER = 1;
 
     const onMouseDown = (event) => {
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -21,31 +21,38 @@ export function setupInteractionHandler(scene, camera, renderer, model) {
     };
 
     const onMouseMove = (event) => {
+
         if(Math.abs(mouse.x - event.clientX) > 10 || Math.abs(mouse.y -event.clientY) > 10){
             isDragging = true;
         }
+
         mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
         mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+        raycaster.layers.enable(0); // interact with obj with layer 0
+        raycaster.layers.disable(HIGHLIGHT_LAYER); //ignore interaction with obj with layer 1
         raycaster.setFromCamera(mouse, camera);
+
         const intersects = raycaster.intersectObjects(scene.children, true);
+        let newHoveredPoint = intersects.length > 0 && intersects[0].object.userData.IsAnnotationPoint ? intersects[0].object : null;
         if (intersects.length > 0 && intersects[0].object.userData.IsAnnotationPoint )
-        { 
-            if(currentlyHoveredPoint && currentlyHoveredPoint !== intersects[0].object ){    //                               
-                console.log('unhovered last obj');
-                unhoverOverPoints(currentlyHoveredPoint);
-                // currentlyHoveredPoint = null;                
+        {             
+            if(!highlightMesh){
+                const geometry = new THREE.SphereGeometry(scale * 1.2 , 32 ,32);
+                const material = new THREE.MeshBasicMaterial ({color: 0x0000ff, transparent: true, opacity: 0.8});
+                highlightMesh = new THREE.Mesh(geometry, material);
+                // highlightMesh.layers.set(HIGHLIGHT_LAYER);
+                scene.add(highlightMesh);
             }
-            currentlyHoveredPoint = intersects[0].object;            
-            hoverOverPoints(currentlyHoveredPoint);
-            // console.log('hovering over the object', currentlyHoveredPoint);
+            // console.log('added a point for highlights');            
+            highlightMesh.position.copy(newHoveredPoint.position);
         }
         else{
-            // fix issues with all points being affected with change material color 
-            if(currentlyHoveredPoint ){ //&& currentlyHoveredPoint !== intersects[0].object                
-                unhoverOverPoints(currentlyHoveredPoint);
-                currentlyHoveredPoint = null;
+            if(highlightMesh){
+                scene.remove(highlightMesh);
+                highlightMesh = null;
             }
-        }
+        }        
     };
 
     const onMouseUp = (event) => {
@@ -59,11 +66,9 @@ export function setupInteractionHandler(scene, camera, renderer, model) {
         raycaster.setFromCamera(mouse, camera);
         const intersects = raycaster.intersectObjects(scene.children, true);
         
-        if (intersects.length > 0) {
-            if(intersects[0].object.userData.IsAnnotationPoint){
-                console.log('Clicked over a interaction point', intersects[0].object.material.color);
-            }
-            else{
+        if (intersects.length > 0 ) {
+            console.log('intersected object ', intersects[0].object.userData);
+            if (intersects[0].object.userData.IsProduct){
                 const intersect = intersects[0];
                 const sphereGeometry = new THREE.SphereGeometry(scale, 32, 32);
                 const sphere = new THREE.Mesh(sphereGeometry, material);
@@ -71,28 +76,29 @@ export function setupInteractionHandler(scene, camera, renderer, model) {
                 sphere.userData.IsAnnotationPoint = true;
                 scene.add(sphere);
             }
+            else if(intersects[0].object.userData.IsAnnotationPoint){
+                console.log('Clicked over a interaction point', intersects[0].object.material.color);
+                handlePointClick(intersects[0].object.userData);
+            }
         }
     }
     
-    function hoverOverPoints(hoverPoint){
-        // console.log('curent objects on hover',currentlyHoveredPoint);
-        if (!hoverPoint.userData.originalColor) {
-            hoverPoint.userData.originalColor = hoverPoint.material.color.getHexString();
+    function hoverOverPoints(point){        
+        // console.log('hover object ', point);
+        if (!point.userData.originalColor) {
+            point.userData.originalColor = point.material.color.getHexString();
         }
-        if(hoverPoint === currentlyHoveredPoint){
-
-            // Change color to white on hover
-            hoverPoint.material.color.set('#FFFFFF');
-        }
+        // Change color to white on hover
+        point.material.color.set('#FFFFFF');
     }   
     
-    function unhoverOverPoints(hoverPoint){
-        console.log('Unhover object ', hoverPoint);
-        if (hoverPoint.userData.originalColor) {
-            console.log('changing color ', hoverPoint);
-            hoverPoint.material.color.set(`#${hoverPoint.userData.originalColor}`);
+    function unhoverOverPoints(point){
+        console.log('Unhover object ', point);
+        if (point.userData.originalColor) {
+            // console.log('changing color ', point);
+            point.material.color.set(`#${point.userData.originalColor}`);
+            // currentlyHoveredPoint = null;
         }
-        currentlyHoveredPoint = null;
     }
     
     renderer.domElement.addEventListener('mousedown', onMouseDown, false);

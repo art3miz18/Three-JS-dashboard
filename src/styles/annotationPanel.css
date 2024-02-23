@@ -10,4 +10,51 @@
     flex-direction: column;
     gap: 10px;
   }
+  /* Annotation Form CSS  */
+  .annotation-form {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .annotation-form form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .annotation-form label {
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  
+  .annotation-form input,
+  .annotation-form textarea {
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  
+  .annotation-form button {
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .annotation-form button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .annotation-form button[type="button"] {
+    background-color: #f44336;
+    color: white;
+  }
   

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { loadModelFromFile } from './loadModel';
 import { setupInteractionHandler } from './interactionHandler';
 
-const DragAndDrop = ({ onModelLoaded, scene, camera, controls, renderer }) => {
+const DragAndDrop = ({ handlePointClick ,onModelLoaded, scene, camera, controls, renderer}) => { //scene, camera, controls, renderer
   const [isDragging, setIsDragging] = useState(false);  
   const [fileLoaded, setFileLoaded] = useState(false);  
   const cleanupInteractionRef = useRef(null);
@@ -16,9 +16,12 @@ const DragAndDrop = ({ onModelLoaded, scene, camera, controls, renderer }) => {
       if (file) {
         loadModelFromFile(file, camera, scene, controls,(loadedModel)=>{
           setFileLoaded(true);
-          cleanupInteractionRef.current = setupInteractionHandler(scene, camera, renderer, loadedModel);
+          cleanupInteractionRef.current = setupInteractionHandler(scene, camera, renderer, loadedModel, handlePointClick);
+          // handle Pointclick event from LoadModel // maybe add callback from app.js
         });
-        if (onModelLoaded) onModelLoaded();
+        if (typeof onModelLoaded === 'function'){
+          onModelLoaded();
+        } 
       }
     }; 
     
@@ -72,7 +75,7 @@ const DragAndDrop = ({ onModelLoaded, scene, camera, controls, renderer }) => {
         loop
         autoplay
       ></lottie-player>
-      <p>Drag and Drop GLB Files Here</p>
+      <p> Drag and Drop GLB Files Here </p>
     </div>
   );
 };
