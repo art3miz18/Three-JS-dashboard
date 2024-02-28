@@ -15,13 +15,15 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
     let HIGHLIGHT_LAYER = 1;
 
     const onMouseDown = (event) => {
+        event.preventDefault();
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
         isDragging = false;
     };
 
     const onMouseMove = (event) => {
-
+        event.preventDefault();
+        // console.log('mouse moved');
         if(Math.abs(mouse.x - event.clientX) > 10 || Math.abs(mouse.y -event.clientY) > 10){
             isDragging = true;
         }
@@ -42,6 +44,7 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
                 const material = new THREE.MeshBasicMaterial ({color: 0x0000ff, transparent: true, opacity: 0.8});
                 highlightMesh = new THREE.Mesh(geometry, material);
                 // highlightMesh.layers.set(HIGHLIGHT_LAYER);
+                highlightMesh.userData.IsHighlightMesh = true;
                 scene.add(highlightMesh);
             }
             // console.log('added a point for highlights');            
@@ -56,6 +59,7 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
     };
 
     const onMouseUp = (event) => {
+        event.preventDefault();
         if(!isDragging) {
             checkIntersections();
         }
@@ -64,10 +68,11 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
     function checkIntersections(){
         raycaster.layers.set(0);
         raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(scene.children, true);
-        
+        let intersects = raycaster.intersectObjects(scene.children, true);
+        intersects = intersects.filter(intersect => !intersect.object.userData.IsHighlightMesh);
+        // intersects = intersects.filter(intersect => !intersect.object.userData.isHighlightMesh);
         if (intersects.length > 0 ) {
-            console.log('intersected object ', intersects[0].object.userData);
+            // console.log('intersected object ', intersects[0].object.uuid);
             if (intersects[0].object.userData.IsProduct){
                 const intersect = intersects[0];
                 const sphereGeometry = new THREE.SphereGeometry(scale, 32, 32);
@@ -78,7 +83,7 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
             }
             else if(intersects[0].object.userData.IsAnnotationPoint){
                 console.log('Clicked over a interaction point', intersects[0].object.material.color);
-                handlePointClick(intersects[0].object.userData);
+                handlePointClick(intersects[0].object.uuid);
             }
         }
     }

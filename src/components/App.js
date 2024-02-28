@@ -4,6 +4,7 @@ import AnnotationForm  from './AnnotationForm';
 import { setupScene } from '../three/setupScene';
 import { loadModelFromFile } from '../three/loadModel';
 import DragAndDrop from '../three/dragAndDrop';
+import { getAnnotationById, getAnnotation, onSaveAnnotation} from '../js/annotation';
 
 
 function App() {
@@ -22,6 +23,23 @@ function App() {
   const handlePointClick = (point) => {
     setSelectedPoint(point);
     setShowForm(true);
+    // Assuming mesh has an annotationID property
+    const annotationID = point;
+    console.log('point data ',point);
+    
+    // Fetch annotation data for the clicked mesh
+    const annotationData = getAnnotationById(annotationID);
+    console.log('Fetched previous Data', annotationData);
+    
+    // If you need to display or edit this annotation, you can now use annotationData
+    // Or if creating a new annotation, use annotationID to save it
+  };
+
+  const handleSaveAnnotation = (id, title, description, pointDetails) => {
+    // // Use the imported function
+    onSaveAnnotation(id, title, description, pointDetails);
+    setShowForm(false);
+    // // Any additional logic you need after saving an annotation    
   };
 
   useEffect(() => {
@@ -61,14 +79,14 @@ function App() {
     { initialized && (
         <>
           <DragAndDrop {...threeObjects} onModelLoaded={handleModelLoaded} handlePointClick={handlePointClick}/>          
-          <AnnotationPanel onModelLoaded={handleModelLoaded} />
+          <AnnotationPanel onModelLoaded={handleModelLoaded}/>
           {showForm && (
             <AnnotationForm
               selectedPoint={selectedPoint}
               onCancel={() => setShowForm(false)}
+              onSave={handleSaveAnnotation}
             />
           )}
-          {/* <InteractionHandler onPointClick={handlePointClick} /> */}
         </>
       )}
   </div>;

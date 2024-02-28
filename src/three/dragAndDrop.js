@@ -6,7 +6,7 @@ const DragAndDrop = ({ handlePointClick ,onModelLoaded, scene, camera, controls,
   const [isDragging, setIsDragging] = useState(false);  
   const [fileLoaded, setFileLoaded] = useState(false);  
   const cleanupInteractionRef = useRef(null);
-  
+  let modelFile = null;
 
   useEffect(() => {
     const handleDrop = (event) => {
@@ -16,25 +16,23 @@ const DragAndDrop = ({ handlePointClick ,onModelLoaded, scene, camera, controls,
       if (file) {
         loadModelFromFile(file, camera, scene, controls,(loadedModel)=>{
           setFileLoaded(true);
-          cleanupInteractionRef.current = setupInteractionHandler(scene, camera, renderer, loadedModel, handlePointClick);
-          // handle Pointclick event from LoadModel // maybe add callback from app.js
+          modelFile = loadedModel;
+          cleanupInteractionRef.current = setupInteractionHandler(scene, camera, renderer, loadedModel, handlePointClick);          
         });
         if (typeof onModelLoaded === 'function'){
           onModelLoaded();
         } 
       }
-    }; 
+    };
+
     
+
     const handleDragOver = (event) => {
       event.preventDefault();
       setIsDragging(true);
     };
 
-    // const handleDragLeave = (event) => {
-    //   event.preventDefault();
-    //   setIsDragging(false);
-    //   setFileLoaded(true); 
-    // };
+    
     
     const handleDragEnd = (event) => {
       event.preventDefault();
@@ -44,21 +42,21 @@ const DragAndDrop = ({ handlePointClick ,onModelLoaded, scene, camera, controls,
 
     // Add event listeners to the document
     document.addEventListener('dragover', handleDragOver);
-    // document.addEventListener('dragleave', handleDragLeave);
     document.addEventListener('drop', handleDrop);
     document.addEventListener('dragend', handleDragEnd);
 
     // Cleanup
     return () => {
       document.removeEventListener('dragover', handleDragOver);
-      // document.removeEventListener('dragleave', handleDragLeave);
       document.removeEventListener('drop', handleDrop);      
       document.removeEventListener('dragend', handleDragEnd);
       if (cleanupInteractionRef.current) {
+        console.log('Cleaned up');
         cleanupInteractionRef.current();
+        
       }
     };
-  }, [scene, camera, controls, onModelLoaded]);
+  }, []); //scene, camera, controls, onModelLoaded, handlePointClick
 
   return (
     <div

@@ -32,6 +32,7 @@ export const loadModelFromFile = (file,camera, scene, controls, onModelLoadedCal
         if (child.isMesh) {
           child.userData.IsProduct = true;
         }
+        child.userData.IsProduct = true;
       });
       scene.add(model);
       console.log(' checking for product tag', model.userData);
