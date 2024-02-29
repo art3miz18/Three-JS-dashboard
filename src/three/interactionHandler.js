@@ -82,7 +82,7 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
                 scene.add(sphere);
             }
             else if(intersects[0].object.userData.IsAnnotationPoint){
-                console.log('Clicked over a interaction point', intersects[0].object.material.color);
+                // console.log('Clicked over a interaction point', intersects[0].object.material.color);
                 handlePointClick(intersects[0].object.uuid);
             }
         }

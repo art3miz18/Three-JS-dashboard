@@ -13,6 +13,7 @@ function App() {
   const [initialized, setInitialized] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState(null);
+  const [annotationData, setAnnotationData] = useState(null);
   
   const handleModelLoaded = (file) =>{
     if (threeObjects.scene && threeObjects.camera && threeObjects.controls) {
@@ -27,12 +28,10 @@ function App() {
     const annotationID = point;
     console.log('point data ',point);
     
-    // Fetch annotation data for the clicked mesh
     const annotationData = getAnnotationById(annotationID);
-    console.log('Fetched previous Data', annotationData);
+    setAnnotationData(annotationData);
     
-    // If you need to display or edit this annotation, you can now use annotationData
-    // Or if creating a new annotation, use annotationID to save it
+    
   };
 
   const handleSaveAnnotation = (id, title, description, pointDetails) => {
@@ -82,6 +81,7 @@ function App() {
           <AnnotationPanel onModelLoaded={handleModelLoaded}/>
           {showForm && (
             <AnnotationForm
+              annotationData={annotationData}
               selectedPoint={selectedPoint}
               onCancel={() => setShowForm(false)}
               onSave={handleSaveAnnotation}

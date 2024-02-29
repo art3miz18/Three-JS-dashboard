@@ -51,7 +51,7 @@ const DragAndDrop = ({ handlePointClick ,onModelLoaded, scene, camera, controls,
       document.removeEventListener('drop', handleDrop);      
       document.removeEventListener('dragend', handleDragEnd);
       if (cleanupInteractionRef.current) {
-        console.log('Cleaned up');
+        // console.log('Cleaned up');
         cleanupInteractionRef.current();
         
       }

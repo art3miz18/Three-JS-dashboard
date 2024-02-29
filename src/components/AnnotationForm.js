@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/annotationPanel.css';
 
-const AnnotationForm = ({ selectedPoint, onSave, onCancel }) => {
+const AnnotationForm = ({ annotationData, selectedPoint, onSave, onCancel }) => {
   const [title, setTitle] = useState( selectedPoint ? selectedPoint.title : '');
   const [description, setDescription] = useState( selectedPoint ? selectedPoint.description : '');
   const annotationID = selectedPoint;
@@ -10,6 +10,12 @@ const AnnotationForm = ({ selectedPoint, onSave, onCancel }) => {
     e.preventDefault();
     onSave({ annotationID, title, description });
   };
+
+  //Set Annotation Data to form if data is found
+  useEffect(() => {
+    setTitle(annotationData? annotationData.id.title : '');
+    setDescription(annotationData? annotationData.id.description :'');
+  }, [annotationData]); // Reinitialize form fields when annotationData changes
 
   return (
     <div className="annotation-form">
