@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createBoundingBox } from './cameraUtil';
-
+import { spritePlane, updateSpriteCanvas, removeSpriteCanvas } from './spriteCanvas';
+import { getAnnotationById } from '../js/annotation.js';
 
 export function setupInteractionHandler(scene, camera, renderer, model, handlePointClick) {
 
@@ -43,15 +44,15 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
                 const geometry = new THREE.SphereGeometry(scale * 1.2 , 32 ,32);
                 const material = new THREE.MeshBasicMaterial ({color: 0x0000ff, transparent: true, opacity: 0.8});
                 highlightMesh = new THREE.Mesh(geometry, material);
-                // highlightMesh.layers.set(HIGHLIGHT_LAYER);
                 highlightMesh.userData.IsHighlightMesh = true;
                 scene.add(highlightMesh);
-            }
-            // console.log('added a point for highlights');            
+            }            
             highlightMesh.position.copy(newHoveredPoint.position);
+            hoverOverPoints(newHoveredPoint,scene);
         }
         else{
             if(highlightMesh){
+                unhoverOverPoints();
                 scene.remove(highlightMesh);
                 highlightMesh = null;
             }
@@ -88,22 +89,24 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
         }
     }
     
-    function hoverOverPoints(point){        
-        // console.log('hover object ', point);
-        if (!point.userData.originalColor) {
-            point.userData.originalColor = point.material.color.getHexString();
-        }
-        // Change color to white on hover
-        point.material.color.set('#FFFFFF');
+    function hoverOverPoints(point){ 
+        const annotationData = getAnnotationById(point.uuid);
+        let details = null;
+        if(annotationData){
+            console.log('annotation title ',annotationData.id.title);
+            console.log('annotation title ',annotationData.id.description);
+            details= { title:  annotationData.id.title, description: annotationData.id.description};
+            updateSpriteCanvas(scene, details, point.position);
+        }          
     }   
     
-    function unhoverOverPoints(point){
-        console.log('Unhover object ', point);
-        if (point.userData.originalColor) {
-            // console.log('changing color ', point);
-            point.material.color.set(`#${point.userData.originalColor}`);
-            // currentlyHoveredPoint = null;
-        }
+    function unhoverOverPoints(){
+        removeSpriteCanvas(scene);
+        // console.log('Unhover object ', point);
+        // if (point.userData.originalColor) {
+        //     point.material.color.set(`#${point.userData.originalColor}`);
+        //     // currentlyHoveredPoint = null;
+        // }
     }
     
     renderer.domElement.addEventListener('mousedown', onMouseDown, false);

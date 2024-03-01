@@ -13,7 +13,7 @@ export const loadModel = (scene, modelPath, onLoadCallback) => {
   });
 };
 
-export const loadModelFromFile = (file,camera, scene, controls, onModelLoadedCallback) => {
+export const loadModelFromFile = (file, camera, scene, controls, onModelLoadedCallback) => {
   const reader = new FileReader();
   if (file instanceof Blob) {
     reader.readAsArrayBuffer(file);

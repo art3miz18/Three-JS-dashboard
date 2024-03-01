@@ -4,7 +4,7 @@ import AnnotationForm  from './AnnotationForm';
 import { setupScene } from '../three/setupScene';
 import { loadModelFromFile } from '../three/loadModel';
 import DragAndDrop from '../three/dragAndDrop';
-import { getAnnotationById, getAnnotation, onSaveAnnotation} from '../js/annotation';
+import { getAnnotationById, onSaveAnnotation} from '../js/annotation';
 
 
 function App() {
