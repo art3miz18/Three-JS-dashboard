@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { createBoundingBox } from './cameraUtil';
-import { spritePlane, updateSpriteCanvas, removeSpriteCanvas } from './spriteCanvas';
+// import { spritePlane, updateSpriteCanvas, removeSpriteCanvas } from './spriteCanvas';
+
 import { getAnnotationById } from '../js/annotation.js';
+// import{ displayAnnotationDetails, removeCSS3DAnnotation} from './CSS3DRend.js';
 
 export function setupInteractionHandler(scene, camera, renderer, model, handlePointClick) {
 
@@ -48,7 +50,7 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
                 scene.add(highlightMesh);
             }            
             highlightMesh.position.copy(newHoveredPoint.position);
-            hoverOverPoints(newHoveredPoint,scene);
+            hoverOverPoints(newHoveredPoint);
         }
         else{
             if(highlightMesh){
@@ -84,7 +86,7 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
             }
             else if(intersects[0].object.userData.IsAnnotationPoint){
                 // console.log('Clicked over a interaction point', intersects[0].object.material.color);
-                handlePointClick(intersects[0].object.uuid);
+                handlePointClick(intersects[0].object.uuid, intersects[0].object.position);
             }
         }
     }
@@ -93,20 +95,18 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
         const annotationData = getAnnotationById(point.uuid);
         let details = null;
         if(annotationData){
-            console.log('annotation title ',annotationData.id.title);
-            console.log('annotation title ',annotationData.id.description);
-            details= { title:  annotationData.id.title, description: annotationData.id.description};
-            updateSpriteCanvas(scene, details, point.position);
+            // details= { title:  annotationData.id.title, description: annotationData.id.description};
+            // updateSpriteCanvas(scene, details, point.position);            
+            // displayAnnotationDetails(details, point.position, scene, camera, renderer);
+
         }          
     }   
     
     function unhoverOverPoints(){
-        removeSpriteCanvas(scene);
-        // console.log('Unhover object ', point);
-        // if (point.userData.originalColor) {
-        //     point.material.color.set(`#${point.userData.originalColor}`);
-        //     // currentlyHoveredPoint = null;
-        // }
+
+        // removeSpriteCanvas(scene);
+        // removeCSS3DAnnotation(scene);
+
     }
     
     renderer.domElement.addEventListener('mousedown', onMouseDown, false);
