@@ -25,7 +25,7 @@ export const getAnnotations = () => {
       annotationID // Use annotationID as the unique identifier
       // position: {x: position.x, y: position.y, z: position.z}
     };
-    console.log('annotations ',annotation);
+    // console.log('annotations ',annotation);
     handleSave(annotation);
   };
   

@@ -3,7 +3,7 @@ import { createBoundingBox } from './cameraUtil';
 // import { spritePlane, updateSpriteCanvas, removeSpriteCanvas } from './spriteCanvas';
 
 import { getAnnotationById } from '../js/annotation.js';
-// import{ displayAnnotationDetails, removeCSS3DAnnotation} from './CSS3DRend.js';
+import{ displayAnnotationDetails, removeCSS3DAnnotation} from './CSS3DRend.js';
 
 export function setupInteractionHandler(scene, camera, renderer, model, handlePointClick) {
 
@@ -95,7 +95,7 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
         const annotationData = getAnnotationById(point.uuid);
         let details = null;
         if(annotationData){
-            // details= { title:  annotationData.id.title, description: annotationData.id.description};
+            // details= { title:  annotationData.annotationID.title, description: annotationData.annotationID.description};
             // updateSpriteCanvas(scene, details, point.position);            
             // displayAnnotationDetails(details, point.position, scene, camera, renderer);
 
