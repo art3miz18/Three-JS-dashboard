@@ -1,5 +1,4 @@
 import React from 'react';
-import * as THREE from 'three';
 import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 
 class AnnotationDetail extends React.Component {

@@ -35,7 +35,7 @@ export const loadModelFromFile = (file, camera, scene, controls, onModelLoadedCa
         child.userData.IsProduct = true;
       });
       scene.add(model);
-      console.log(' checking for product tag', model.userData);
+      console.log(' checking for product tag', model);
       // Additional setup like adjusting the camera can go here
       adjustCameraToFitObject(scene, camera, model, controls);
       if (onModelLoadedCallback && typeof onModelLoadedCallback === 'function') {

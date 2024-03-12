@@ -25,7 +25,7 @@ code {
 /* Highlight drop zone on drag over */
 .drop-zone {
   position: fixed;
-  z-index: 3;
+  z-index: 1;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
