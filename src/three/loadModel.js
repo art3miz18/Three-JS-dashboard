@@ -59,6 +59,12 @@ export const loadModelFromFile = (file, camera, scene, controls, onModelLoadedCa
   const namee=  file?.name;
   console.log('file name', namee);
   const extension = namee.split('.').pop().toLowerCase();
+
+  if (extension !== 'gltf' && extension !== 'glb') {
+    console.error('Unsupported file format:', extension);
+    alert('Unsupported file format. Please upload a 3D GLB or GLTF file.');
+    return; // Stop the function if the file format is not supported
+  }
   const reader = new FileReader();
   reader.readAsArrayBuffer(file);
 
@@ -72,32 +78,6 @@ export const loadModelFromFile = (file, camera, scene, controls, onModelLoadedCa
           processModel(gltf.scene, scene, camera, controls, onModelLoadedCallback);
         });
         break;
-
-        case 'fbx':
-        console.log('file is FBX');
-        const fbxLoader = new FBXLoader();
-
-        fbxLoader.parse(event.target.result, '', (fbx) => {
-          processModel(fbx, scene, camera, controls, onModelLoadedCallback);
-        }, (error) => {
-          console.error('Error loading FBX:', error);
-        });
-
-        // fbxLoader.parse(event.target.result, '', (fbx) => {
-        //   processModel(fbx.scene, scene, camera, controls, onModelLoadedCallback);
-        // });
-
-        // fbxLoader.load( '', function ( file ) {
-				// 	scene.add( file );
-				// } );
-        break;
-
-        case 'obj':
-        console.log('file is OBJ');
-        const objLoader = new OBJLoader();
-        const object = objLoader.parse(event.target.result);
-        processModel(object, scene, camera, controls, onModelLoadedCallback);
-        break;
       default:
         console.error('Unsupported file format:', extension);
     }
@@ -105,36 +85,9 @@ export const loadModelFromFile = (file, camera, scene, controls, onModelLoadedCa
 
   reader.onerror = (error) => {
     console.error('Error reading file:', error);
+    alert('An error occurred while reading the file.');
   };
 };
-// loader.load( 'models/fbx/nurbs.fbx', function ( object ) {
-
-//   scene.add( object );
-
-// } );
-
-
-// loader.load( 'models/fbx/Samba Dancing.fbx', function ( object ) {
-
-// 					mixer = new THREE.AnimationMixer( object );
-
-// 					const action = mixer.clipAction( object.animations[ 0 ] );
-// 					action.play();
-
-// 					object.traverse( function ( child ) {
-
-// 						if ( child.isMesh ) {
-
-// 							child.castShadow = true;
-// 							child.receiveShadow = true;
-
-// 						}
-
-// 					} );
-
-// 					scene.add( object );
-
-// 				} );
 function processModel(model, scene, camera, controls, onModelLoadedCallback) {
   model.traverse((child) => {
     if (child.isMesh) {
