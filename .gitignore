@@ -23,4 +23,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 client/public/models
-client/public/hdri/christmas_photo_studio.hdr
+client/public/hdri
+
+#env
+server/.env
