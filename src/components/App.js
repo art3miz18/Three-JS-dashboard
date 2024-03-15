@@ -86,10 +86,7 @@ function App() {
     // Create CSS3DObject and set its position
     const css3DObject = new CSS3DObject(element);
     css3DObject.position.copy(annotationData.position);
-    // Apply the scale factor
-    // css3DObject.scale.set(scaleFactor, scaleFactor, scaleFactor);
     
-    // Add it to the scene
     threeObjects.scene.add(css3DObject);    
     return css3DObject;
   };
