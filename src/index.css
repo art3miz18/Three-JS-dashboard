@@ -23,15 +23,31 @@ code {
 }
 
 /* Highlight drop zone on drag over */
-.drag-over-message {
-  display: none; /* Hidden by default */
+.drop-zone {
   position: fixed;
+  z-index: 1;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border: 2px dashed #007bff; /* Or any preferred style */
-  padding: 20px;
+  width: 60%;
+  max-width: 20%;
+  padding: 40px;
+  border: 2px dashed #ccc;
+  border-radius: 15px;
+  background-color: #f9f9f9;
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.9);
-  z-index: 1000; /* Ensure it's above other content */
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center;
+}
+
+.drop-zone.drag-over {
+  border-color: #007bff;
+  background-color: #e3f2fd;
+}
+
+.drop-zone p {
+  margin-top: 10px; /* Add space between the icon and the text */
 }
