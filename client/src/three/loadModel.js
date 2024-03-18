@@ -88,6 +88,7 @@ export const loadModelFromFile = (file, camera, scene, controls, onModelLoadedCa
     alert('An error occurred while reading the file.');
   };
 };
+
 function processModel(model, scene, camera, controls, onModelLoadedCallback) {
   model.traverse((child) => {
     if (child.isMesh) {
@@ -98,7 +99,6 @@ function processModel(model, scene, camera, controls, onModelLoadedCallback) {
   });
 
   scene.add(model);
-  console.log('model added to the scene');
   adjustCameraToFitObject(scene, camera, model, controls);
 
   if (onModelLoadedCallback && typeof onModelLoadedCallback === 'function') {

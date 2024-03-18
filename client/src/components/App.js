@@ -144,7 +144,7 @@ function App() {
 
     // Cleanup function to remove the renderer from the DOM and clear event listeners
     return () => {           
-
+      console.log(renderer.domElement);
       annotations.forEach(anno => {
         if (anno.css3DObject) {
           scene.remove(anno.css3DObject);

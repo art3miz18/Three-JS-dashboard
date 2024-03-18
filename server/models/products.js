@@ -2,6 +2,11 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'User' // This should match the model name of your User model
+  },
     name: { type: String, required: true },
     description: { type: String, required: false },
     images: [{ type: String }], // Array of image file paths

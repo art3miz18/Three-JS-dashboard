@@ -1,5 +1,6 @@
 // server/routes/productRoutes.js
 const express = require('express');
+const auth = require('../middleware/auth');
 const Product = require('../models/products');
 const multer = require('multer');
 const upload = multer({ dest: '../uploads'});
@@ -10,14 +11,10 @@ const router = express.Router();
 // e.g., GET, POST, PUT, DELETE endpoints
 
 //add product to collection
-router.post('/', async (req, res) => {
+router.post('/', auth,  async (req, res) => {
     const product = new Product({
-      name: req.body.name,
-      description: req.body.description,
-      price: req.body.price,
-      images: req.body.images,
-      modelFile: req.body.modelFile,
-      annotations: req.body.annotations,
+      ...req.body,
+      user: req.user._id
     });
   
     try {
@@ -29,9 +26,9 @@ router.post('/', async (req, res) => {
   });
 
 // GET route to fetch all products
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
-      const products = await Product.find();
+      const products = await Product.find({ user: req.user._id });
       res.json(products);
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -40,32 +37,34 @@ router.get('/', async (req, res) => {
 
 
 // GET route to fetch a single product by ID
-router.get('/:id', getProduct, (req, res) => {
+router.get('/:id', auth, getProduct, (req, res) => {
     res.json(res.product);
 });
   
   
 // PATCH route to update a product's details
 // USES :: get product Middleware 
-router.patch('/:id', getProduct, async (req, res) => {
-    if (req.body.name != null) {
-        res.product.name = req.body.name;
-    }
-    if (req.body.description != null) {
-        res.product.description = req.body.description;
-    }
-    if (req.body.price != null) {
-        res.product.price = req.body.price;
-    }
-    // Add other fields as necessary
-    
+router.patch('/:id', auth, async (req, res) => {
+        
     try {
+        const product = await Product.findOne({ _id: req.params.id, user: req.user._id });
+        // console.log(' id: ', req.params.id, 'user: ', req.user._id);
+        if (!product) {
+          return res.status(404).json({ message: 'Product not found or user not authorized' });
+        }
+        
+        // Dynamically update fields provided in the request
+        Object.entries(req.body).forEach(([key, value]) => {
+          product[key] = value;
+      });
+        console.log('Product ', updatedProduct);
         const updatedProduct = await res.product.save();
         res.json(updatedProduct);
     } catch (err) {
         res.status(400).json({ message: err.message });
+        // console.log('error here', err.message);
     }
-});
+}); 
 
 
 // DELETE route to delete a product
