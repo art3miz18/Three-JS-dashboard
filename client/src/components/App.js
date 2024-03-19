@@ -1,103 +1,46 @@
-import React, { useEffect, useRef , useState} from 'react';
-import AnnotationForm  from './ThreeComponents/AnnotationForm';
-import { setupScene } from '../three/setupScene';
-import { loadModelFromFile } from '../three/loadModel';
-import DragAndDrop from '../three/dragAndDrop';
-import { getAnnotationById, onSaveAnnotation} from '../js/annotation';
+import React, { useEffect, useState} from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import LoginForm from './auth/LoginForm';
+import RegisterForm from './auth/RegisterForm';
+import Dashboard from './dashboard/Dashboard';
+import PrivateRoute from './common/PrivateRoute';
+import AuthContext from '../context/AuthContext'; // Assuming you've created this context
+
 
 
 function App() {
-  const mountRef = useRef(null);
-  const [threeObjects, setThreeObjects] = useState({ scene: null, camera: null, renderer: null, controls: null });
-  const [initialized, setInitialized] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [selectedPoint, setSelectedPoint] = useState(null);
-  const [AnnotationPosition, setPosition] = useState(null);
-  const [annotationData, setAnnotationData] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  
 
-  const handleModelLoaded = (file) =>{
-    if (threeObjects.scene && threeObjects.camera && threeObjects.controls) {
-      loadModelFromFile(file, threeObjects.camera, threeObjects.scene, threeObjects.controls);
-    }
-  };
-
-  const handlePointClick = (point, position) => {
-    setSelectedPoint(point);
-    setPosition(position);
-    setShowForm(true);
-    // Assuming mesh has an annotationID property
-    const annotationID = point;
-    const annotationData = getAnnotationById(annotationID);
-    setAnnotationData(annotationData);
-  };
-
-  const handleSaveAnnotation = ( id ) => {    
-    // console.log('id: ',id);
-    const annotationWithPosition = {
-        ...id, // Spread the id object to include annotationID, title, and description
-        position: AnnotationPosition // Add the position from state
-    };
-    onSaveAnnotation(annotationWithPosition);    
-    setShowForm(false);
-    setPosition(null);
-   
-  };
+  
   useEffect(() => {
-    
-    const { scene, camera, renderer ,controls} = setupScene();
-
-    setThreeObjects({ scene, camera, renderer, controls });
-    setInitialized(true);
-    
-    mountRef.current.appendChild(renderer.domElement);
-
-    //render loop
-    const animate = () => {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    };
-    animate(); 
-
-    const onWindowResize = () => {
-      const width = mountRef.current.clientWidth;
-      const height = mountRef.current.clientHeight;
-
-      renderer.setSize(width, height);
-
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-
-      controls.update();
-    };
-
-
-    window.addEventListener('resize', onWindowResize, false);
-
-    // Cleanup function to remove the renderer from the DOM and clear event listeners
-    return () => {           
-      mountRef.current.removeChild(renderer.domElement);
-      window.removeEventListener('resize',onWindowResize, false);
-    };
+  // Check for a token in local storage and update isAuthenticated accordingly
+  const token = localStorage.getItem('token');
+  setIsAuthenticated(!!token);
   }, []);
 
-  return <div ref={mountRef} style={{ width: '100vw', height: '100vh' }}>
-    { initialized && (
-
-        <>
-          <DragAndDrop {...threeObjects} onModelLoaded={handleModelLoaded} handlePointClick={handlePointClick}/>
-        
-          {showForm && (
-            <AnnotationForm
-              annotationData={annotationData}
-              selectedPoint={selectedPoint}
-              onCancel={() => setShowForm(false)}
-              onSave={handleSaveAnnotation}
-            />
-          )}
-        </>
-      )}
-  </div>;
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <PrivateRoute isAuthenticated={isAuthenticated}>
+                <Dashboard />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/" 
+            element={isAuthenticated ? <Navigate replace to="/dashboard" /> : <Navigate replace to="/login" />} 
+          />
+        </Routes>
+      </Router>
+    </AuthContext.Provider>
+  );
 }
-
 export default App;
