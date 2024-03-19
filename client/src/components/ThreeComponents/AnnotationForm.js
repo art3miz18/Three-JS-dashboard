@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/annotationPanel.css';
+import '../../styles/annotationPanel.css';
 
 const AnnotationForm = ({ annotationData, selectedPoint, onSave, onCancel }) => {
   const [title, setTitle] = useState( selectedPoint ? selectedPoint.title : '');

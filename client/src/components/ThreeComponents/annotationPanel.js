@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/annotationPanel.css'; // Make sure to create and import your CSS file
+import '../../styles/annotationPanel.css'; // Make sure to create and import your CSS file
 
 
 const AnnotationPanel = ({ onModelLoaded }) => {

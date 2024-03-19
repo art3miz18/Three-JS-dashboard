@@ -1,12 +1,12 @@
 import React, { useEffect, useRef , useState} from 'react';
-import AnnotationForm  from './ThreeComponents/AnnotationForm';
-import { setupScene } from '../three/setupScene';
-import { loadModelFromFile } from '../three/loadModel';
-import DragAndDrop from '../three/dragAndDrop';
-import { getAnnotationById, onSaveAnnotation} from '../js/annotation';
+import AnnotationForm  from '../ThreeComponents/AnnotationForm';
+import { setupScene } from '../../three/setupScene';
+import { loadModelFromFile } from '../../three/loadModel';
+import DragAndDrop from '../../three/dragAndDrop';
+import { getAnnotationById, onSaveAnnotation} from '../../js/annotation';
 
 
-function App() {
+const ThreeContainer = () => {
   const mountRef = useRef(null);
   const [threeObjects, setThreeObjects] = useState({ scene: null, camera: null, renderer: null, controls: null });
   const [initialized, setInitialized] = useState(false);
@@ -98,6 +98,6 @@ function App() {
         </>
       )}
   </div>;
-}
+};
 
-export default App;
+export default ThreeContainer;

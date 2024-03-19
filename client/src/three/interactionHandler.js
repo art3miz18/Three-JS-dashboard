@@ -3,7 +3,6 @@ import { createBoundingBox } from './cameraUtil';
 // import { spritePlane, updateSpriteCanvas, removeSpriteCanvas } from './spriteCanvas';
 
 import { getAnnotationById } from '../js/annotation.js';
-import{ displayAnnotationDetails, removeCSS3DAnnotation} from './CSS3DRend.js';
 
 export function setupInteractionHandler(scene, camera, renderer, model, handlePointClick) {
 
@@ -26,7 +25,6 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
 
     const onMouseMove = (event) => {
         event.preventDefault();
-        // console.log('mouse moved');
         if(Math.abs(mouse.x - event.clientX) > 10 || Math.abs(mouse.y -event.clientY) > 10){
             isDragging = true;
         }
@@ -50,11 +48,11 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
                 scene.add(highlightMesh);
             }            
             highlightMesh.position.copy(newHoveredPoint.position);
-            hoverOverPoints(newHoveredPoint);
+            //hoverOverPoints(newHoveredPoint);
         }
         else{
             if(highlightMesh){
-                unhoverOverPoints();
+                //unhoverOverPoints();
                 scene.remove(highlightMesh);
                 highlightMesh = null;
             }
@@ -73,9 +71,7 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
         raycaster.setFromCamera(mouse, camera);
         let intersects = raycaster.intersectObjects(scene.children, true);
         intersects = intersects.filter(intersect => !intersect.object.userData.IsHighlightMesh);
-        // intersects = intersects.filter(intersect => !intersect.object.userData.isHighlightMesh);
         if (intersects.length > 0 ) {
-            // console.log('intersected object ', intersects[0].object.uuid);
             if (intersects[0].object.userData.IsProduct){
                 const intersect = intersects[0];
                 const sphereGeometry = new THREE.SphereGeometry(scale, 32, 32);
@@ -85,7 +81,6 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
                 scene.add(sphere);
             }
             else if(intersects[0].object.userData.IsAnnotationPoint){
-                // console.log('Clicked over a interaction point', intersects[0].object.material.color);
                 handlePointClick(intersects[0].object.uuid, intersects[0].object.position);
             }
         }
@@ -94,18 +89,10 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
     function hoverOverPoints(point){ 
         const annotationData = getAnnotationById(point.uuid);
         let details = null;
-        if(annotationData){
-            // details= { title:  annotationData.annotationID.title, description: annotationData.annotationID.description};
-            // updateSpriteCanvas(scene, details, point.position);            
-            // displayAnnotationDetails(details, point.position, scene, camera, renderer);
-
-        }          
+                  
     }   
     
     function unhoverOverPoints(){
-
-        // removeSpriteCanvas(scene);
-        // removeCSS3DAnnotation(scene);
 
     }
     

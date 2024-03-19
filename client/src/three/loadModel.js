@@ -1,6 +1,4 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { adjustCameraToFitObject } from './cameraUtil';
 
 export const loadModel = (scene, modelPath, onLoadCallback) => {
@@ -15,41 +13,6 @@ export const loadModel = (scene, modelPath, onLoadCallback) => {
   });
 };
 
-// export const loadModelFromFile = (file, camera, scene, controls, onModelLoadedCallback) => {
-//   const extension = file.name.split('.').pop().toLowerCase();
-//   const reader = new FileReader();
-//   if (file instanceof Blob) {
-//     reader.readAsArrayBuffer(file);
-//   } 
-//   else {
-//     console.error('The provided file is not a valid Blob.');
-//   }
-//   // reader.readAsArrayBuffer(file);
-//   reader.onload = (event) => {
-//     const loader = new GLTFLoader();
-//     loader.parse(event.target.result, '', (gltf) => {
-//       // console.log("event target ",event.target.result);
-//       const model = gltf.scene;
-//       // model.userData.IsProduct = true;
-//       model.traverse((child) => {
-//         if (child.isMesh) {
-//           child.userData.IsProduct = true;
-//         }
-//         child.userData.IsProduct = true;
-//       });
-//       scene.add(model);
-//       console.log(' checking for product tag', model);
-//       // Additional setup like adjusting the camera can go here
-//       adjustCameraToFitObject(scene, camera, model, controls);
-//       if (onModelLoadedCallback && typeof onModelLoadedCallback === 'function') {
-//         onModelLoadedCallback(model);
-//       }
-//     });
-//   };
-//   reader.onerror = (error) => {
-//     console.error('Error reading file:', error);
-//   };
-// };
 export const loadModelFromFile = (file, camera, scene, controls, onModelLoadedCallback) => {
   console.log(file);
   if (!file) {
