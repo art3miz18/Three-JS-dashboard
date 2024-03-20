@@ -3,20 +3,41 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const Product = require('../models/products');
 const multer = require('multer');
-const upload = multer({ dest: '../uploads'});
-
+const path = require('path');
 const router = express.Router();
 
+
+//define storage route to store files ../uploads
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, path.join(__dirname, '../uploads')); // Make sure the /uploads directory exists in your server directory
+  },
+  filename: function(req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage }).fields([
+  { name: 'images', maxCount: 5 }, // Adjust maxCount as needed
+  { name: 'modelFile', maxCount: 1 }
+]);
 // Define routes for your Product CRUD operations
 // e.g., GET, POST, PUT, DELETE endpoints
 
 //add product to collection
-router.post('/', auth,  async (req, res) => {
+router.post('/', auth, upload, async (req, res) => {
+    const imagePath = req.files['images'] ? req.files['images'].map(file => file.path) : [];
+    const modelFilePath = req.files['modelFile'] ? req.files['modelFile'][0].path : null;
     const product = new Product({
-      ...req.body,
-      user: req.user._id
+      user: req.user._id,
+      name: req.body.name,
+      description: req.body.description,
+      images: imagePath,
+      modelFile: modelFilePath,
+      annotations: JSON.parse(req.body.annotations || '[]') // Assuming annotations are sent as a JSON string
     });
-  
+    console.log(modelFilePath);
+    
     try {
       const newProduct = await product.save();
       res.status(201).json(newProduct);
@@ -24,7 +45,7 @@ router.post('/', auth,  async (req, res) => {
       res.status(400).json({ message: err.message });
     }
   });
-
+ 
 // GET route to fetch all products
 router.get('/', auth, async (req, res) => {
     try {

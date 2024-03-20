@@ -6,12 +6,15 @@ const cors = require('cors');
 const productRoutes = require('./routes/productRoute');
 const users = require('./routes/authRoutes');
 const app = express();
+const path = require('path');
 
 // Middlewares
 app.use(cors());
 app.use(express.json()); // for parsing application/json
 app.use('/api/products', productRoutes); //  product routes
 app.use('/api/users', users); // user routes
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // Connect to MongoDB

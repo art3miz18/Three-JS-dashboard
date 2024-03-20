@@ -76,12 +76,12 @@ const ThreeContainer = () => {
 
     // Cleanup function to remove the renderer from the DOM and clear event listeners
     return () => {           
-      mountRef.current.removeChild(renderer.domElement);
+      // mountRef.current.removeChild(renderer.domElement);
       window.removeEventListener('resize',onWindowResize, false);
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: '100vw', height: '100vh' }}>
+  return <div ref={mountRef} style={{ width: '100vw', height: '90vh' }}>
     { initialized && (
 
         <>
