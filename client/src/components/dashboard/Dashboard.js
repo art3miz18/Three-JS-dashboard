@@ -1,37 +1,48 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AddProductForm from '../dashboard/AddProductForm';
 import ThreeContainer from '../ThreeComponents/ThreeContainer';
 import ProductList from '../dashboard/ProductList';
 
 const Dashboard = () => {
-  const [view, setView] = useState('products');
+  const [view, setView] = useState('addProduct');
+  const navigate = useNavigate();
+
+  const DeleteProduct = (productID) =>{
+    console.log('delete called', productID);
+  };
+
+  //Update Product details
+  const EditProduct = (product) =>{
+    console.log('Edit called on product', product);
+    navigate(`/edit-product/${product._id}`);
+  };
 
   return (
-    <div>
-      
-      <nav>
-      <div class="mt-5 flex lg:ml-4 lg:mt-0">
-        <span class="hidden sm:block">
-          <button onClick={() => setView('addProduct')} class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Add Product</button>
-        </span> 
-      </div>
-      <div class="mt-5 flex lg:ml-4 lg:mt-0">
-        <span class="hidden sm:block">
-          <button onClick={() => setView('product')} class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">View Products</button>
-        </span> 
-      </div>
-      <div class="mt-5 flex lg:ml-4 lg:mt-0">
-        <span class="hidden sm:block">        
-        <button onClick={() => setView('ThreeView')} class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">3D view</button>
-        </span> 
-      </div>
-      </nav>
+    <div class="min-h-full">      
+      <nav class="bg-gray-800 max-w-max">
+        <div class=" flex items-baseline space-x-20">
+          <div class="mt-5 flex lg:ml-0 ">
+            <span class="hidden sm:block">
+              <button onClick={() => setView('addProduct')} class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Add Product</button>
+            </span> 
+          </div>
+          <div class="mt-5 flex lg:ml-0 ">
+            <span class="hidden sm:block">
+              <button onClick={() => setView('product')} class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">View Products</button>
+            </span> 
+          </div>
+          <div class="mt-5 flex lg:ml-0 ">
+            <span class="hidden sm:block">        
+            <button onClick={() => setView('ThreeView')} class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">3D view</button>
+            </span> 
+          </div> 
+        </div>
+      </nav>     
 
       {view === 'addProduct' && <AddProductForm />}
-      {view === 'product' && <ProductList />}
-      {view === 'ThreeView' && <ThreeContainer />}
-      
-      {/* Other dashboard-related components */}
+      {view === 'product' && <ProductList onEdit={EditProduct} onDelete={DeleteProduct} />}
+      {view === 'ThreeView' && <ThreeContainer />}      
     </div>
   );
 };

@@ -18,6 +18,7 @@ const LoginForm = () => {
       // window.location.href = '/';
       setIsAuthenticated(true);
       navigate('/dashboard');
+      // navigate('/add-product');
     } catch (error) {
       console.error('Login failed:', error);
       alert('Wrong login credentials');

@@ -26,21 +26,21 @@ const upload = multer({ storage: storage }).fields([
 
 //add product to collection
 router.post('/', auth, upload, async (req, res) => {
-    const imagePath = req.files['images'] ? req.files['images'].map(file => file.path) : [];
-    const modelFilePath = req.files['modelFile'] ? req.files['modelFile'][0].path : null;
+    const imagePath = req.files['images'] ? req.files['images'].map(file => `/uploads/${file.filename}`) : [];
+    const modelFilePath = req.files['modelFile'] ? `/uploads/${req.files['modelFile'][0].filename}` : null;
     const product = new Product({
       user: req.user._id,
       name: req.body.name,
-      description: req.body.description,
+      description: req.body.description, 
       images: imagePath,
       modelFile: modelFilePath,
       annotations: JSON.parse(req.body.annotations || '[]') // Assuming annotations are sent as a JSON string
     });
-    console.log(modelFilePath);
+    console.log('Model file stored',modelFilePath);
     
     try {
       const newProduct = await product.save();
-      res.status(201).json(newProduct);
+      res.status(201).json('Model file stored', modelFilePath, newProduct);
     } catch (err) {
       res.status(400).json({ message: err.message });
     }

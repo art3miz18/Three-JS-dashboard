@@ -29,3 +29,6 @@ client/public/hdri
 #env
 server/.env
 VScode.bat
+
+#uploads
+server/uploads

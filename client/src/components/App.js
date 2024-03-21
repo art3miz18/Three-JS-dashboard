@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import Dashboard from './dashboard/Dashboard';
 import AddProductForm from './dashboard/AddProductForm';
 import ProductList from './dashboard/ProductList';
+import EditProduct from './dashboard/EditProduct';
 import LoginForm from './auth/LoginForm';
 import RegisterForm from './auth/RegisterForm';
 import PrivateRoute from './common/PrivateRoute';
@@ -29,6 +30,11 @@ function App() {
           <Route path="/dashboard" element={
               <PrivateRoute isAuthenticated={isAuthenticated}>
                 <Dashboard />
+              </PrivateRoute>
+            }/>
+          <Route path="/edit-product/:id" element={
+              <PrivateRoute isAuthenticated={isAuthenticated}>
+                <EditProduct />
               </PrivateRoute>
             }/>
           <Route path="/add-product" element={

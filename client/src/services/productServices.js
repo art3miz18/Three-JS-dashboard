@@ -30,7 +30,22 @@ const getProducts = async () => {
     const response = await axios.get(API_URL, config);
     return response.data;
   };
+
+const getProductById = async (productId) => {
+  const userObject = JSON.parse(localStorage.getItem('user'));
+  const token =  userObject ? userObject.token : null;
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`, // Assuming JWT is stored in localStorage
+      },
+    };
+  
+    // GET request to fetch products
+    const response = await axios.get(`${API_URL}${productId}`, config);
+    return response.data;
+  };
+
 export default {
-  addProduct, getProducts
+  addProduct, getProducts, getProductById
   // ...other service functions
 };
