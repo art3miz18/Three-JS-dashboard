@@ -6,14 +6,14 @@ let controls;
 
 export const setupScene = () => {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color().setHSL( 0.6, 0, 0.6 );
+  scene.background = new THREE.Color().setHSL( 0.8, 0, 0.8 );
   // scene.fog = new THREE.Fog( scene.background, 1, 5000 );
   
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
   // camera.position.z = 15;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });  
-  renderer.domElement.style.position = 'absolute';
+  // renderer.domElement.style.position = '';
   renderer.domElement.style.zIndex = "1";
   renderer.setSize(window.innerWidth, window.innerHeight);  
   
@@ -23,7 +23,7 @@ export const setupScene = () => {
   // controls.minDistance = 1.5;
   // controls.maxDistance = 6;
   const lights = setupLights(scene);
- 
+  console.log('scene initialiazed');
   return { scene, camera, renderer, controls};
 };
 

@@ -4,7 +4,7 @@ import { setupInteractionHandler } from './interactionHandler';
 
 const DragAndDrop = ({ handlePointClick ,onModelLoaded, scene, camera, controls, renderer}) => { //scene, camera, controls, renderer
   const [isDragging, setIsDragging] = useState(false);  
-  const [fileLoaded, setFileLoaded] = useState(false);  
+  const [fileLoaded, setFileLoaded] = useState(false);    
   const cleanupInteractionRef = useRef(null);
   let modelFile = null;
 
@@ -24,8 +24,6 @@ const DragAndDrop = ({ handlePointClick ,onModelLoaded, scene, camera, controls,
         } 
       }
     };
-
-    
 
     const handleDragOver = (event) => {
       event.preventDefault();

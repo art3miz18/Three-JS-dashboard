@@ -1,12 +1,12 @@
 import React, { useEffect, useRef , useState} from 'react';
 import AnnotationForm  from '../ThreeComponents/AnnotationForm';
 import { setupScene } from '../../three/setupScene';
-import { loadModelFromFile } from '../../three/loadModel';
-import DragAndDrop from '../../three/dragAndDrop';
+import { loadModelFromFile, loadModel } from '../../three/loadModel';
+// import DragAndDrop from '../../three/dragAndDrop';
 import { getAnnotationById, onSaveAnnotation} from '../../js/annotation';
 
 
-const ThreeContainer = () => {
+const ThreeContainer = (modelPath) => {
   const mountRef = useRef(null);
   const [threeObjects, setThreeObjects] = useState({ scene: null, camera: null, renderer: null, controls: null });
   const [initialized, setInitialized] = useState(false);
@@ -51,7 +51,8 @@ const ThreeContainer = () => {
     setInitialized(true);
     
     mountRef.current.appendChild(renderer.domElement);
-
+    console.log('modelpath inside container prop', modelPath);
+    loadModel(scene, modelPath, camera,  controls);
     //render loop
     const animate = () => {
       requestAnimationFrame(animate);
@@ -76,16 +77,18 @@ const ThreeContainer = () => {
 
     // Cleanup function to remove the renderer from the DOM and clear event listeners
     return () => {           
-      // mountRef.current.removeChild(renderer.domElement);
+      if (mountRef.current && mountRef.current.contains(renderer.domElement)) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
       window.removeEventListener('resize',onWindowResize, false);
     };
-  }, []);
+  }, [modelPath]);
 
   return <div ref={mountRef} style={{ width: '100vw', height: '90vh' }}>
     { initialized && (
 
         <>
-          <DragAndDrop {...threeObjects} onModelLoaded={handleModelLoaded} handlePointClick={handlePointClick}/>
+          {/* <DragAndDrop {...threeObjects} onModelLoaded={handleModelLoaded} handlePointClick={handlePointClick}/> */}
         
           {showForm && (
             <AnnotationForm
