@@ -9,7 +9,6 @@ const ProductList = ({ onEdit, onDelete }) => {
     const fetchProducts = async () => {
       try {
         const response = await productService.getProducts();
-        console.log(response);
         setProducts(response);
       } catch (error) {
         console.error('Error fetching products:', error);

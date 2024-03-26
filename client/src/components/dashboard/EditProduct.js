@@ -5,13 +5,11 @@ import ThreeContainer from '../ThreeComponents/ThreeContainer';
 import UpdateForm from './UpdateForm'
 
 const EditProduct = () => {
-  const mountRef = useRef(null);
   const { id } = useParams(); // This will get the product id from the URL
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
     
-
     const fetchProduct = async () => {
         try {
           const fetchedProduct = await productService.getProductById(id);
@@ -21,12 +19,19 @@ const EditProduct = () => {
           // Handle error, possibly redirect back or show a message
         }
       };
-      fetchProduct();
-      
+      fetchProduct();      
   }, [id]);
 
-  const handleSave = async () => {
-    // Logic to save the edited product details
+  const handleSave = async (updateProduct) => {
+    console.log('handling save param', updateProduct);
+    try{
+      await productService.updateProduct(id, updateProduct);
+      console.log('Update Succesful');
+      setProduct(updateProduct);
+    }
+    catch(err){
+      console.error('error in update patch', err);
+    }
   };
 
   const handleNameChange = (e) => {
@@ -35,17 +40,23 @@ const EditProduct = () => {
 
   const handleDescriptionChange = (e) => {
     setProduct({ ...product, description: e.target.value });
+    console.log('Description Changed',e.description.value)
+    
   };
   
   return (
-    <div>
-      <UpdateForm
-        product={product}
-        onSave={handleSave}
-        onNameChange={handleNameChange}
-        onDescriptionChange={handleDescriptionChange}
-      />
-      {product && <ThreeContainer modelPath={product.modelFile} />}
+    <div class ="flex flex-row">
+      <div class = "basis-1/2 h-700 w-700">
+        {product && <ThreeContainer modelPath={product.modelFile} />}
+      </div>      
+      <div class = "flex-basis: 100% h-700 w-700 mx-10 ">
+        <UpdateForm
+          product={product}
+          onSave={handleSave}
+          // onNameChange={handleNameChange}
+          // onDescriptionChange={handleDescriptionChange}
+        />      
+      </div>
     </div>
   );
 }; 

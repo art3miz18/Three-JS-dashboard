@@ -4,7 +4,7 @@ import { setupScene } from '../../three/setupScene';
 import { loadModelFromFile, loadModel } from '../../three/loadModel';
 // import DragAndDrop from '../../three/dragAndDrop';
 import { getAnnotationById, onSaveAnnotation} from '../../js/annotation';
-
+import { setupInteractionHandler } from '../../three/interactionHandler';
 
 const ThreeContainer = (modelPath) => {
   const mountRef = useRef(null);
@@ -14,7 +14,8 @@ const ThreeContainer = (modelPath) => {
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [AnnotationPosition, setPosition] = useState(null);
   const [annotationData, setAnnotationData] = useState(null);
-
+  const cleanupInteractionRef = useRef(null);  
+  let modelFile = null;
 
   const handleModelLoaded = (file) =>{
     if (threeObjects.scene && threeObjects.camera && threeObjects.controls) {
@@ -22,7 +23,10 @@ const ThreeContainer = (modelPath) => {
     }
   };
 
+  
+
   const handlePointClick = (point, position) => {
+    console.log('point over object clicked');
     setSelectedPoint(point);
     setPosition(position);
     setShowForm(true);
@@ -45,35 +49,37 @@ const ThreeContainer = (modelPath) => {
   };
   useEffect(() => {
     
-    const { scene, camera, renderer ,controls} = setupScene();
-
+    const { scene, camera, renderer ,controls} = setupScene(); //need to send width and height 
+    // renderer.setSize()
     setThreeObjects({ scene, camera, renderer, controls });
     setInitialized(true);
     
     mountRef.current.appendChild(renderer.domElement);
-    console.log('modelpath inside container prop', modelPath);
-    loadModel(scene, modelPath, camera,  controls);
+    
+    loadModel(scene, modelPath, camera,  controls, (onModelLoaded)=>{
+      cleanupInteractionRef.current = setupInteractionHandler(scene, camera, renderer, onModelLoaded, handlePointClick); // need to add interaction flow here 
+    });
+    
     //render loop
     const animate = () => {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
     };
     animate(); 
-
+    
+    // setupCanvasSize(); // add window event listeners
     const onWindowResize = () => {
       const width = mountRef.current.clientWidth;
       const height = mountRef.current.clientHeight;
-
       renderer.setSize(width, height);
-
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
-
       controls.update();
+      // 
     };
-
-
+    
     window.addEventListener('resize', onWindowResize, false);
+    onWindowResize();
 
     // Cleanup function to remove the renderer from the DOM and clear event listeners
     return () => {           
@@ -81,15 +87,18 @@ const ThreeContainer = (modelPath) => {
         mountRef.current.removeChild(renderer.domElement);
       }
       window.removeEventListener('resize',onWindowResize, false);
+      if (cleanupInteractionRef.current) {
+        // console.log('Cleaned up');
+        cleanupInteractionRef.current();
+        
+      }
     };
   }, [modelPath]);
 
-  return <div ref={mountRef} style={{ width: '100vw', height: '90vh' }}>
+  return <div ref={mountRef} children class="box-content" style={{ width: '800px', height: '800px'}}>
     { initialized && (
-
         <>
-          {/* <DragAndDrop {...threeObjects} onModelLoaded={handleModelLoaded} handlePointClick={handlePointClick}/> */}
-        
+          
           {showForm && (
             <AnnotationForm
               annotationData={annotationData}

@@ -2,17 +2,18 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { adjustCameraToFitObject } from './cameraUtil';
 
 export const loadModel = (scene, modelPath, camera, controls, onLoadCallback) => {
-  console.log('modelppp', modelPath);
   const loader = new GLTFLoader();
   const backendUrl = "http://localhost:3001"; // This can be set dynamically based on environment
   const modelFilePath = `${backendUrl}${modelPath.modelPath}`; // Construct the correct path
-  console.log('model path', modelFilePath);
+  console.log('modelPath', modelFilePath);
   loader.load(modelFilePath, gltf => {
     const model = gltf.scene;
-    model.userData.IsProduct = true;
-    scene.add(model);
-    adjustCameraToFitObject(scene, camera, model, controls);
-    if (onLoadCallback) onLoadCallback(model);
+    processModel(model, scene, camera, controls, onLoadCallback);
+
+    // model.userData.IsProduct = true;
+    // scene.add(model);
+    // adjustCameraToFitObject(scene, camera, model, controls);
+    // if (onLoadCallback) onLoadCallback(model);
   }, undefined, error => {
     console.error('An error happened', error);
   });
