@@ -1,4 +1,7 @@
 // annotations.js
+import productServices from "../services/productServices";
+
+
 export const getAnnotations = () => {
     const annotations = localStorage.getItem('annotations');
     return annotations ? JSON.parse(annotations) : [];
@@ -20,11 +23,19 @@ export const getAnnotations = () => {
     return annotations.find(a => a.annotationID.annotationID === id);
   };
   
-  export const onSaveAnnotation = (annotationID) => {
+  export const onSaveAnnotation = async (annotationID, productId) => {
     const annotation = {
       annotationID // Use annotationID as the unique identifier
       // position: {x: position.x, y: position.y, z: position.z}
     };
+
+     try {
+      await productServices.saveAnnotation(productId, annotationID);
+      console.log('Annotation saved successfully', );
+      // Optionally, refresh annotations here if you have a UI component displaying them
+    } catch (error) {
+      console.error('Error saving annotation:', error);
+    } 
     // console.log('annotations ',annotation);
     handleSave(annotation);
   };

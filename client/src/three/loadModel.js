@@ -4,8 +4,8 @@ import { adjustCameraToFitObject } from './cameraUtil';
 export const loadModel = (scene, modelPath, camera, controls, onLoadCallback) => {
   const loader = new GLTFLoader();
   const backendUrl = "http://localhost:3001"; // This can be set dynamically based on environment
-  const modelFilePath = `${backendUrl}${modelPath.modelPath}`; // Construct the correct path
-  console.log('modelPath', modelFilePath);
+  const modelFilePath = `${backendUrl}${modelPath}`; 
+  console.error('modelPath', modelFilePath);
   loader.load(modelFilePath, gltf => {
     const model = gltf.scene;
     processModel(model, scene, camera, controls, onLoadCallback);

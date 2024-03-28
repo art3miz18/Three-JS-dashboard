@@ -22,7 +22,6 @@ const UpdateForm = ({ product, onSave }) => {
       name: name,
       description: description
     };
-    console.log('Form submission with updated product:', updatedProduct);
     onSave({ ...updatedProduct });
   };
 

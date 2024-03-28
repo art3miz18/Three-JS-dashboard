@@ -1,7 +1,12 @@
-// server/routes/productRoutes.js
+// ENDPOINTS
+// +++++++++ PUBLIC ENDPOINTS +++++++++
+// Get products: {endpointURL}/public/:userId 
+
+
 const express = require('express');
 const auth = require('../middleware/auth');
 const Product = require('../models/products');
+const Annotation = require('../models/annotation');
 const multer = require('multer');
 const path = require('path');
 const router = express.Router();
@@ -17,6 +22,7 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
+
 const upload = multer({ storage: storage }).fields([
   { name: 'images', maxCount: 5 }, // Adjust maxCount as needed
   { name: 'modelFile', maxCount: 1 }
@@ -112,30 +118,62 @@ async function getProduct(req, res, next) {
     }
 }
 
-//Public data with User ID publically
-router.get('/public/:userId', async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const products = await Product.find({ user: userId });
-    res.json(products);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+//#region  PUBLIC END POINTS for [ accessing all products by user || accessing specific product details ]
+  //Public data with User ID publically
+    router.get('/public/:userId', async (req, res) => {
+      try {
+        const { userId } = req.params;
+        const products = await Product.find({ user: userId });
+        res.json(products);
+      } catch (err) {
+        res.status(500).json({ message: err.message });
+      }
+    });
 
-// GET route to fetch a single product publicly by product ID
-router.get('/public/details/:productId', async (req, res) => {
-  try {
-    const { productId } = req.params;
-    const product = await Product.findById(productId);
-    
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    // GET route to fetch a single product publicly by product ID
+    router.get('/public/details/:productId', async (req, res) => {
+      try {
+        const { productId } = req.params;
+        const product = await Product.findById(productId);
+        
+        if (!product) {
+          return res.status(404).json({ message: 'Product not found' });
+        }
 
-    res.json(product);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+        res.json(product);
+      } catch (err) {
+        res.status(500).json({ message: err.message });
+      }
+    });
+
+//#endregion
+
+//#region ANNOTATION DATA 'get' and 'post' requests
+
+  // get annotation data based on product 
+      router.get('/products/:productId/annotations', async (req, res) => {
+          try {
+            const annotations = await Annotation.find({ productId: req.params.productId });
+            res.json(annotations);
+          } catch (error) {
+            res.status(500).json({ message: error.message });
+          }
+        });
+
+  // post new annotation or update existing data  
+      router.post('/products/:productId/annotations', async (req, res) => {
+          const annotation = new Annotation({
+            ...req.body,
+            productId: req.params.productId
+          });
+        
+          try {
+            const newAnnotation = await annotation.save();
+            res.status(201).json(newAnnotation);
+          } catch (error) {
+            res.status(400).json({ message: error.message });
+          }
+        });
+//#endregion 
+
 module.exports = router;

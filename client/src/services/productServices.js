@@ -71,7 +71,6 @@ const DeleteProductById = async (productId) => {
             'Authorization': `Bearer ${token}`, // Assuming JWT is stored in localStorage
           },
         };
-        console.log('path request data', formData);
         // PATCH request to update an existing product
         const response = await axios.put(`${API_URL}${productId}`, formData, config);
         return response.data;
@@ -81,6 +80,25 @@ const DeleteProductById = async (productId) => {
     }
   };
 
+  const saveAnnotation = async (productId, annotation) => {
+    try {
+      const response = await axios.post(`${API_URL}/products/${productId}/annotations`, annotation);
+      return response.data;
+    } catch (error) {
+      console.error('Error saving annotation:', error);
+      throw error;
+    }
+  };
+  
+  const fetchAnnotations = async (productId) => {
+    try {
+      const response = await axios.get(`${API_URL}/products/${productId}/annotations`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching annotations:', error);
+      throw error;
+    }
+  };
 export default {
-  addProduct, getProducts, getProductById, updateProduct, DeleteProductById
+  addProduct, getProducts, getProductById, updateProduct, DeleteProductById, saveAnnotation, fetchAnnotations
 };

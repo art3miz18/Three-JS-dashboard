@@ -31,9 +31,7 @@ const EditProduct = () => {
   const handleSave = async (updateProduct) => {
     try{
       await productService.updateProduct(id, updateProduct);
-      console.info('Update Succesful',updateProduct);
       setRefreshTrigger(oldTrigger => oldTrigger + 1);
-      // setProduct(updateProduct);
     }
     catch(err){
       console.error('error in update patch', err);
@@ -53,7 +51,7 @@ const EditProduct = () => {
   return (
     <div class ="flex flex-row">
       <div class = "basis-1/2 h-700 w-700">
-        { !isLoading && product && <ThreeContainer modelPath={  product.modelFile } />}
+        { !isLoading && product && <ThreeContainer modelPath={product.modelFile} productId={product._id} />}
       </div>      
       <div class = "flex-basis: 100% h-700 w-700 mx-10 ">
         <UpdateForm
