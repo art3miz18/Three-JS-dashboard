@@ -46,7 +46,7 @@ router.post('/', auth, upload, async (req, res) => {
     }
   });
  
-// GET route to fetch all products
+// GET route to fetch all products 
 router.get('/', auth, async (req, res) => {
     try {
       const products = await Product.find({ user: req.user._id });
@@ -62,29 +62,23 @@ router.get('/:id', auth, getProduct, (req, res) => {
     res.json(res.product);
 });
   
-  
 // PATCH route to update a product's details
 // USES :: get product Middleware 
-router.patch('/:id', auth, getProduct, async (req, res) => {
-        
+router.put('/:id', auth, getProduct, async (req, res) => {        
     try {
-        const product = await Product.findOne({ _id: req.params.id , user: req.user._id});         
-        if (!product) {
+      const updateVal = req.body;
+      delete updateVal['_id'];
+      const updatedProduct = await Product.findOneAndUpdate({_id: req.params.id,  user: req.user._id}, {...updateVal});         
+      if (!updatedProduct) {
           return res.status(404).json({ message: 'Product not found or user not authorized' });
-        }
-        
-        // Dynamically update fields provided in the request
-        Object.entries(req.body).forEach(([key, value]) => {
-          res.product[key] = value;
-        });      
-      const updatedProduct = await res.product.save();
-      res.json(updatedProduct);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-        // console.log('error here', err.message);
-    }
-}); 
+        } 
 
+      return res.json({updatedProduct});
+    } catch (err) {
+        console.error('error here', err);
+        res.status(400).json({ message: err.message });
+    }
+});
 
 // DELETE route to delete a product
 router.delete('/:id',auth, getProduct, async (req, res) => {
@@ -103,7 +97,6 @@ router.delete('/:id',auth, getProduct, async (req, res) => {
     }
 });
 
-
 // Middleware to get a product by ID
 async function getProduct(req, res, next) {
     let product;
@@ -119,4 +112,30 @@ async function getProduct(req, res, next) {
     }
 }
 
+//Public data with User ID publically
+router.get('/public/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const products = await Product.find({ user: userId });
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET route to fetch a single product publicly by product ID
+router.get('/public/details/:productId', async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const product = await Product.findById(productId);
+    
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 module.exports = router;

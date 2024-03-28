@@ -2,27 +2,27 @@
 import React, { useEffect, useState } from 'react';
 import productService from '../../services/productServices';
 
-const ProductList = ({ onEdit, onDelete }) => {
+const ProductList = ({ onEdit, onDelete, refreshTrigger }) => {
   const [products, setProducts] = useState([]);
   
+  
+  const fetchProducts = async () => {
+    try {
+      const response = await productService.getProducts();
+      setProducts(response);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+  
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await productService.getProducts();
-        setProducts(response);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
-
     fetchProducts();
-  }, []);
+  }, [refreshTrigger]);
 
   return (
     <div class="max-auto">
       <ul class="max-w-md space-y-1 text-gray-500 list-inside dark:text-gray-400">
         {products.map((product) => (
-
           <li>
             <div class="flex h-32 rounded-md items-center gap-x-6 border-2 hover:bg-indigo-500 " key={product._id}>
               <img class="h-24 w-24 rounded-full" src={product.images[0]} alt="ProductImg"/>
@@ -42,8 +42,6 @@ const ProductList = ({ onEdit, onDelete }) => {
           </li>
         ))}        
       </ul>
-      
-
     </div>
   );
 };

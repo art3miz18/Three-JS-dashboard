@@ -17,12 +17,16 @@ const UpdateForm = ({ product, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('e',product);
-    onSave({ ...product, name, description });
+    const updatedProduct = {
+      ...product,
+      name: name,
+      description: description
+    };
+    console.log('Form submission with updated product:', updatedProduct);
+    onSave({ ...updatedProduct });
   };
 
   return (
-    
     <form onSubmit={handleSubmit} class = "container mx-auto" >
       <h1>Edit Product</h1>
       <label for="first-name" class="text-base font-semibold leading-7 text-gray-900 my-4">Product Name</label>

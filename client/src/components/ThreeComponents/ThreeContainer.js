@@ -1,12 +1,11 @@
-import React, { useEffect, useRef , useState} from 'react';
+import React, { useEffect, useRef , useState, memo} from 'react';
 import AnnotationForm  from '../ThreeComponents/AnnotationForm';
 import { setupScene } from '../../three/setupScene';
 import { loadModelFromFile, loadModel } from '../../three/loadModel';
-// import DragAndDrop from '../../three/dragAndDrop';
 import { getAnnotationById, onSaveAnnotation} from '../../js/annotation';
 import { setupInteractionHandler } from '../../three/interactionHandler';
 
-const ThreeContainer = (modelPath) => {
+const ThreeContainer = ( modelPath ) => {
   const mountRef = useRef(null);
   const [threeObjects, setThreeObjects] = useState({ scene: null, camera: null, renderer: null, controls: null });
   const [initialized, setInitialized] = useState(false);
@@ -55,7 +54,7 @@ const ThreeContainer = (modelPath) => {
     setInitialized(true);
     
     mountRef.current.appendChild(renderer.domElement);
-    
+    console.log('modelpath variable', modelPath);
     loadModel(scene, modelPath, camera,  controls, (onModelLoaded)=>{
       cleanupInteractionRef.current = setupInteractionHandler(scene, camera, renderer, onModelLoaded, handlePointClick); // need to add interaction flow here 
     });
@@ -97,8 +96,7 @@ const ThreeContainer = (modelPath) => {
 
   return <div ref={mountRef} children class="box-content" style={{ width: '800px', height: '800px'}}>
     { initialized && (
-        <>
-          
+        <>          
           {showForm && (
             <AnnotationForm
               annotationData={annotationData}

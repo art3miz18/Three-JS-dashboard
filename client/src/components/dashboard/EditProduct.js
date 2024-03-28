@@ -7,27 +7,33 @@ import UpdateForm from './UpdateForm'
 const EditProduct = () => {
   const { id } = useParams(); // This will get the product id from the URL
   const [product, setProduct] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     
     const fetchProduct = async () => {
-        try {
+      setIsLoading(true);
+      try {
           const fetchedProduct = await productService.getProductById(id);
           setProduct(fetchedProduct);
         } catch (error) {
           console.error('Error fetching product:', error);
           // Handle error, possibly redirect back or show a message
+        } finally{
+          setIsLoading(false);
+          console.log('new product details', product );
         }
       };
       fetchProduct();      
-  }, [id]);
+  }, [id , refreshTrigger]);
 
   const handleSave = async (updateProduct) => {
-    console.log('handling save param', updateProduct);
     try{
       await productService.updateProduct(id, updateProduct);
-      console.log('Update Succesful');
-      setProduct(updateProduct);
+      console.info('Update Succesful',updateProduct);
+      setRefreshTrigger(oldTrigger => oldTrigger + 1);
+      // setProduct(updateProduct);
     }
     catch(err){
       console.error('error in update patch', err);
@@ -40,14 +46,14 @@ const EditProduct = () => {
 
   const handleDescriptionChange = (e) => {
     setProduct({ ...product, description: e.target.value });
-    console.log('Description Changed',e.description.value)
+    console.log('Description Changed',e.description.value);
     
   };
-  
+
   return (
     <div class ="flex flex-row">
       <div class = "basis-1/2 h-700 w-700">
-        {product && <ThreeContainer modelPath={product.modelFile} />}
+        { !isLoading && product && <ThreeContainer modelPath={  product.modelFile } />}
       </div>      
       <div class = "flex-basis: 100% h-700 w-700 mx-10 ">
         <UpdateForm

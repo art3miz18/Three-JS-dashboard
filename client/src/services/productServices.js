@@ -45,24 +45,42 @@ const getProductById = async (productId) => {
     return response.data;
   };
 
-  const updateProduct = async (productId, formData) => {
-    console.log('updating product details ' ,formData);
-    // Include configuration for sending the Authorization header with the JWT
-    const userObject = JSON.parse(localStorage.getItem('user'));
-    const token = userObject ? userObject.token : null;
+const DeleteProductById = async (productId) => {
+  const userObject = JSON.parse(localStorage.getItem('user'));
+  const token =  userObject ? userObject.token : null;
     const config = {
       headers: {
-        'Content-Type': 'multipart/form-data', // Use 'application/json' if you're sending JSON data
         'Authorization': `Bearer ${token}`, // Assuming JWT is stored in localStorage
       },
     };
   
-    // PATCH request to update an existing product
-    const response = await axios.patch(`${API_URL}${productId}`, formData, config);
+    // GET request to fetch products
+    const response = await axios.delete(`${API_URL}${productId}`, config);
     return response.data;
   };
 
+  const updateProduct = async (productId, formData) => {
+    try{
+
+        // console.log('updating product details ' ,formData);
+        // Include configuration for sending the Authorization header with the JWT
+        const userObject = JSON.parse(localStorage.getItem('user'));
+        const token = userObject ? userObject.token : null;
+        const config = {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Assuming JWT is stored in localStorage
+          },
+        };
+        console.log('path request data', formData);
+        // PATCH request to update an existing product
+        const response = await axios.put(`${API_URL}${productId}`, formData, config);
+        return response.data;
+    }
+    catch(er){
+      console.error('error on updating product', er);
+    }
+  };
+
 export default {
-  addProduct, getProducts, getProductById, updateProduct
-  // ...other service functions
+  addProduct, getProducts, getProductById, updateProduct, DeleteProductById
 };

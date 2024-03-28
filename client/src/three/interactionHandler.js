@@ -47,7 +47,7 @@ export function setupInteractionHandler(scene, camera, renderer, model, handlePo
         let newHoveredPoint = intersects.length > 0 && intersects[0].object.userData.IsAnnotationPoint ? intersects[0].object : null;
         if (intersects.length > 0 && intersects[0].object.userData.IsAnnotationPoint )
         {           
-            console.log('clicked on product');  
+            // console.log('clicked on product');  
             if(!highlightMesh){
                 const geometry = new THREE.SphereGeometry(scale * 1.2 , 32 ,32);
                 const material = new THREE.MeshBasicMaterial ({color: 0x0000ff, transparent: true, opacity: 0.8});
