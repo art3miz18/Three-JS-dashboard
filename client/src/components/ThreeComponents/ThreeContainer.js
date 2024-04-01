@@ -2,8 +2,8 @@ import React, { useEffect, useRef , useState } from 'react';
 import AnnotationForm  from '../ThreeComponents/AnnotationForm';
 import { setupScene } from '../../three/setupScene';
 import { loadModel } from '../../three/loadModel';
-import { getAnnotationById, onSaveAnnotation} from '../../js/annotation';
-import { setupInteractionHandler } from '../../three/interactionHandler';
+import { getAnnotationById, onSaveAnnotation, getAnnotationData } from '../../js/annotation';
+import InteractionHandler from '../../three/interactionHandler';
 // import  productService  from '../../services/productServices';
 
 const ThreeContainer = ({modelPath, productId}) => {
@@ -13,7 +13,7 @@ const ThreeContainer = ({modelPath, productId}) => {
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [AnnotationPosition, setPosition] = useState(null);
   const [annotationData, setAnnotationData] = useState(null);
-  const cleanupInteractionRef = useRef(null);  
+  // const cleanupInteractionRef = useRef(null);  
 
   const handlePointClick = (point, position) => {
     console.log('point over object clicked');
@@ -21,8 +21,10 @@ const ThreeContainer = ({modelPath, productId}) => {
     setPosition(position);
     setShowForm(true);
     const annotationID = point;
-    const annotationData = getAnnotationById(annotationID);
-    setAnnotationData(annotationData);
+     getAnnotationById(productId, annotationID).then( annotationData=>{
+      console.log('fetched data from API',annotationData);
+      setAnnotationData(annotationData);
+    });
   };
 
   const handleSaveAnnotation = async ( id ) => {    
@@ -30,15 +32,6 @@ const ThreeContainer = ({modelPath, productId}) => {
         ...id, 
         position: AnnotationPosition 
     };
-
-    // try {
-    //     await productService.saveAnnotation(productId, annotationWithPosition);
-    //     console.log('Annotation saved successfully', );
-    //     // Optionally, refresh annotations here if you have a UI component displaying them
-
-    //   } catch (error) {
-    //     console.error('Error saving annotation:', error);
-    //   }
 
     onSaveAnnotation(annotationWithPosition , productId); 
     console.log('annotations ',annotationWithPosition);   
@@ -54,7 +47,9 @@ const ThreeContainer = ({modelPath, productId}) => {
     mountRef.current.appendChild(renderer.domElement);
     console.log('modelpath variable', modelPath);
     loadModel(scene, modelPath, camera,  controls, (onModelLoaded)=>{
-      cleanupInteractionRef.current = setupInteractionHandler(scene, camera, renderer, onModelLoaded, handlePointClick);
+      const interactionHandler = new InteractionHandler(scene, camera, renderer, onModelLoaded, handlePointClick);
+      // cleanupInteractionRef.current = interactionHandler;
+      getAnnotationData(productId, interactionHandler);
     });
     
 
@@ -84,9 +79,9 @@ const ThreeContainer = ({modelPath, productId}) => {
         }
         window.removeEventListener('resize',onWindowResize, false);
         
-        if (cleanupInteractionRef.current) {
-          cleanupInteractionRef.current();          
-        }
+        // if (cleanupInteractionRef.current) {
+        //   cleanupInteractionRef.current();          
+        // }
       };
     }, [modelPath, productId]);
 

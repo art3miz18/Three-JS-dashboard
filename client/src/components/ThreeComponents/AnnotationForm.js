@@ -13,8 +13,8 @@ const AnnotationForm = ({ annotationData, selectedPoint, onSave, onCancel }) => 
 
   //Set Annotation Data to form if data is found
   useEffect(() => {
-    setTitle(annotationData? annotationData.annotationID.title : '');
-    setDescription(annotationData? annotationData.annotationID.description :'');
+    setTitle(annotationData? annotationData.title : '');
+    setDescription(annotationData? annotationData.description :'');
   }, [annotationData]); // Reinitialize form fields when annotationData changes
 
   return (

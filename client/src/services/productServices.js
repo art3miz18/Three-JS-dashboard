@@ -92,13 +92,28 @@ const DeleteProductById = async (productId) => {
   
   const fetchAnnotations = async (productId) => {
     try {
-      const response = await axios.get(`${API_URL}/products/${productId}/annotations`);
+      const response = await axios.get(`${API_URL}${productId}/annotations`);
       return response.data;
     } catch (error) {
       console.error('Error fetching annotations:', error);
       throw error;
     }
   };
+
+  export const getAnnotationById = async (productId, annotationId) => {
+    try {
+      const response = await axios.get(`${API_URL}${productId}/annotations/${annotationId}`);
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        console.error('Failed to fetch annotation details');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching annotation details:', error);
+      return null;
+    }
+  };
 export default {
-  addProduct, getProducts, getProductById, updateProduct, DeleteProductById, saveAnnotation, fetchAnnotations
+  addProduct, getProducts, getProductById, updateProduct, DeleteProductById, saveAnnotation, fetchAnnotations, getAnnotationById
 };

@@ -1,7 +1,6 @@
 // annotations.js
 import productServices from "../services/productServices";
 
-
 export const getAnnotations = () => {
     const annotations = localStorage.getItem('annotations');
     return annotations ? JSON.parse(annotations) : [];
@@ -18,9 +17,12 @@ export const getAnnotations = () => {
     localStorage.setItem('annotations', JSON.stringify(annotations));
   };
   
-  export const getAnnotationById = (id) => {
-    const annotations = getAnnotations();
-    return annotations.find(a => a.annotationID.annotationID === id);
+  export const getAnnotationById = async(productId, annotationId) => {
+    // const annotations = getAnnotations();
+    // return annotations.find(a => a.annotationID.annotationID === id);
+    const annotationData = await productServices.getAnnotationById(productId, annotationId);
+    console.log('annotation Data', annotationData);
+    return annotationData;
   };
   
   export const onSaveAnnotation = async (annotationID, productId) => {
@@ -40,3 +42,17 @@ export const getAnnotations = () => {
     handleSave(annotation);
   };
   
+  export const getAnnotationData = async (productID, interactionHandler)=> {
+    try{
+      const annotations = await productServices.fetchAnnotations(productID);
+      console.log("found annotation data", annotations);
+      // createAnnotations(annotations);
+      interactionHandler.addAnnotations(annotations);
+      if(!annotations){
+        console.log('annotation are null on this product');
+      }
+    }
+    catch(error){
+      console.error(error.message);
+    }
+  }

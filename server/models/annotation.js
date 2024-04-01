@@ -1,11 +1,8 @@
 const mongoose = require('mongoose');
 
 const annotationSchema = new mongoose.Schema({
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'products' 
-  },
+  
+  annotationID: { type: String, required: true },
   title: { type: String, required: true },
   description: { type: String, required: false },
   position: {
@@ -15,6 +12,11 @@ const annotationSchema = new mongoose.Schema({
   }
 });
 
-const Annotation = mongoose.model('Annotation', annotationSchema);
+const productAnnotationsSchema = new mongoose.Schema({
+  productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true, unique: true },
+  annotations: [annotationSchema]
+});
+
+const Annotation = mongoose.model('Annotations', productAnnotationsSchema);
 
 module.exports = Annotation;

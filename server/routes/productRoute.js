@@ -151,29 +151,94 @@ async function getProduct(req, res, next) {
 //#region ANNOTATION DATA 'get' and 'post' requests
 
   // get annotation data based on product 
-      router.get('/products/:productId/annotations', async (req, res) => {
-          try {
-            const annotations = await Annotation.find({ productId: req.params.productId });
-            res.json(annotations);
-          } catch (error) {
-            res.status(500).json({ message: error.message });
+    router.get('/:productId/annotations', async (req, res) => {          
+        try {
+          const { productId } = req.params;
+          const productAnnotations = await Annotation.findOne({ productId }).populate('productId');
+          
+          if (!productAnnotations) {
+            return res.status(404).json({ message: 'No annotations found for this product' });
           }
-        });
-
+      
+          res.json(productAnnotations.annotations);
+        } catch (error) {
+          res.status(500).json({ message: error.message });
+        }
+      });
+  //Get annotation by ID for specific product
+  router.get('/:productId/annotations/:annotationId', async (req, res) => {          
+    try {
+      const { productId } = req.params;
+      const product = await Annotation.findOne({ productId }).populate('productId');
+        if (!product) {
+            return res.status(404).send({ message: 'Product not found' });
+        }
+        // Find the specific annotation in the product's annotations array
+        const annotation = product.annotations.find(ann => ann.annotationID === req.params.annotationId);
+        if (!annotation) {
+            return res.status(404).send({ message: 'Annotation not found' });
+        }  
+      res.json(annotation);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
   // post new annotation or update existing data  
       router.post('/products/:productId/annotations', async (req, res) => {
-          const annotation = new Annotation({
-            ...req.body,
-            productId: req.params.productId
-          });
+          const { productId } = req.params;
+          const newAnnotation = req.body; // Assuming this contains the annotation detail
         
           try {
-            const newAnnotation = await annotation.save();
-            res.status(201).json(newAnnotation);
+            let productAnnotations = await Annotation.findOne({ productId });
+        
+            if (!productAnnotations) {
+              // If no annotations for this product yet, create a new document
+              productAnnotations = new Annotation({ productId, annotations: [newAnnotation] });
+            } else {
+              // Otherwise, add the new annotation to the existing document
+              productAnnotations.annotations.push(newAnnotation);
+            }
+        
+            await productAnnotations.save();
+            res.status(201).json(productAnnotations);
           } catch (error) {
             res.status(400).json({ message: error.message });
           }
         });
-//#endregion 
+
+  // Adding new updates to added points
+      router.put('/products/:productId/annotations/:annotationId',auth, async (req, res) => {
+        try {
+          const { productId, annotationId } = req.params;
+          const updateVal = req.body; // This is the updated annotation data
+
+          // First, find the ProductAnnotations document for the given productId
+          const productAnnotations = await ProductAnnotations.findOne({ productId, user: req.user._id });
+
+          if (!productAnnotations) {
+              return res.status(404).json({ message: 'Product not found or user not authorized' });
+          }
+
+          // Find the index of the annotation to be updated
+          const annotationIndex = productAnnotations.annotations.findIndex(annotation => annotation.annotationID === annotationId);
+
+          if (annotationIndex === -1) {
+              return res.status(404).json({ message: 'Annotation not found' });
+          }
+
+          // Replace the existing annotation data with updateVal
+          productAnnotations.annotations[annotationIndex] = updateVal;
+
+          // Save the updated ProductAnnotations document
+          await productAnnotations.save();
+
+          res.json({ message: 'Annotation updated successfully', annotation: productAnnotations.annotations[annotationIndex] });
+      } catch (err) {
+          console.error('Error updating annotation:', err);
+          res.status(400).json({ message: err.message });
+      }
+      });
+
+  //#endregion 
 
 module.exports = router;
