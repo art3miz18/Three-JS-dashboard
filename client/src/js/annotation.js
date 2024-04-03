@@ -39,7 +39,7 @@ export const getAnnotations = () => {
       console.error('Error saving annotation:', error);
     } 
     // console.log('annotations ',annotation);
-    handleSave(annotation);
+    //handleSave(annotation);
   };
   
   export const getAnnotationData = async (productID, interactionHandler)=> {

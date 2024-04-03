@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/users/';
+let API_URL = '';
+
+//setting baseURL for localTesting should be ommitted when working on production
+const setBaseUrl = (url) => {
+   API_URL = url+"/users/";
+};
 
 const register = (username, password) => {
   return axios.post(API_URL + 'register', {
@@ -28,5 +33,6 @@ const logout = () => {
 export default {
   register,
   login,
-  logout
+  logout,
+  setBaseUrl
 };

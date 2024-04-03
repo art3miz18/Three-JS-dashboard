@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Upon initial load, try to get authentication data from local storage or another source
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('user');
     if (token) {
       setAuthData({ token, isAuthenticated: true });
     }

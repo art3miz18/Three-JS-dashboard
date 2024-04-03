@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const productRoutes = require('./routes/productRoute');
 const users = require('./routes/authRoutes');
+const getServerIPAddress = require('./middleware/getServerIp');
 const app = express();
 const path = require('path');
 
@@ -28,6 +29,12 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
+
+app.get('/api/server-info', (req, res) => {
+  const ServerIP = getServerIPAddress(); // This would be a function you define to get the server IP
+  const baseURL = `http://${ServerIP}:${PORT}/api`;
+  res.json({ ServerIP, baseURL });
+}); 
 
 // Start the server
 const PORT = process.env.PORT || 3001;

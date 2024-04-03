@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api/products/'; // Update with the correct API endpoint
+let API_URL = ''; // Update with the correct API endpoint
+
+
+const setBaseUrlProd = (url) => {
+  API_URL = url+'/products/';
+};
 
 const addProduct = async (formData) => {
   // Include configuration for sending the Authorization header with the JWT
@@ -115,5 +120,5 @@ const DeleteProductById = async (productId) => {
     }
   };
 export default {
-  addProduct, getProducts, getProductById, updateProduct, DeleteProductById, saveAnnotation, fetchAnnotations, getAnnotationById
+  setBaseUrlProd, addProduct, getProducts, getProductById, updateProduct, DeleteProductById, saveAnnotation, fetchAnnotations, getAnnotationById
 };

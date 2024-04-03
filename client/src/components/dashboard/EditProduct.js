@@ -3,8 +3,10 @@ import { useParams } from 'react-router-dom';
 import productService from '../../services/productServices';
 import ThreeContainer from '../ThreeComponents/ThreeContainer';
 import UpdateForm from './UpdateForm'
+import { useAPI } from '../common/APIcontext';
 
 const EditProduct = () => {
+  const { apiURL } = useAPI();
   const { id } = useParams(); // This will get the product id from the URL
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,8 +27,9 @@ const EditProduct = () => {
           console.log('new product details', product );
         }
       };
+
       fetchProduct();      
-  }, [id , refreshTrigger]);
+  }, [id , refreshTrigger, apiURL]);
 
   const handleSave = async (updateProduct) => {
     try{
@@ -51,14 +54,12 @@ const EditProduct = () => {
   return (
     <div class ="flex flex-row">
       <div class = "basis-1/2 h-700 w-700">
-        { !isLoading && product && <ThreeContainer modelPath={product.modelFile} productId={product._id} />}
+        { !isLoading && product && <ThreeContainer apiURL={ apiURL } modelPath={ product.modelFile } productId={product._id} />}
       </div>      
       <div class = "flex-basis: 100% h-700 w-700 mx-10 ">
         <UpdateForm
           product={product}
           onSave={handleSave}
-          // onNameChange={handleNameChange}
-          // onDescriptionChange={handleDescriptionChange}
         />      
       </div>
     </div>
