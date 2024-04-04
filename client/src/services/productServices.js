@@ -119,6 +119,14 @@ const DeleteProductById = async (productId) => {
       return null;
     }
   };
+
+  export const getProductURL = (productID) =>{
+    const productData = {
+      getProduct: `${API_URL}/public/details/${productID}`,
+      getAnnotations: `${API_URL}${productID}/annotations`
+    };
+    return productData;
+  };
 export default {
-  setBaseUrlProd, addProduct, getProducts, getProductById, updateProduct, DeleteProductById, saveAnnotation, fetchAnnotations, getAnnotationById
+  setBaseUrlProd, addProduct, getProducts, getProductById, updateProduct, DeleteProductById, saveAnnotation, fetchAnnotations, getAnnotationById, getProductURL
 };

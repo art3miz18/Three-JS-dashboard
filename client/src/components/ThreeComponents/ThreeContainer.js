@@ -5,7 +5,7 @@ import { loadModel } from '../../three/loadModel';
 import { getAnnotationById, onSaveAnnotation, getAnnotationData } from '../../js/annotation';
 import InteractionHandler from '../../three/interactionHandler';
 
-const ThreeContainer = ({apiURL, modelPath, productId}) => {
+const ThreeContainer = ({ modelPath, productId, isEditMode}) => {
   const mountRef = useRef(null);
   const [initialized, setInitialized] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -14,13 +14,11 @@ const ThreeContainer = ({apiURL, modelPath, productId}) => {
   const [annotationData, setAnnotationData] = useState(null);
 
   const handlePointClick = (point, position) => {
-    console.log('point over object clicked');
     setSelectedPoint(point);
     setPosition(position);
     setShowForm(true);
     const annotationID = point;
      getAnnotationById(productId, annotationID).then( annotationData=>{
-      console.log('fetched data from API',annotationData);
       setAnnotationData(annotationData);
     });
   };
@@ -44,11 +42,18 @@ const ThreeContainer = ({apiURL, modelPath, productId}) => {
     mountRef.current.appendChild(renderer.domElement);
     console.log('modelpath variable', modelPath);
     loadModel(scene, modelPath, camera,  controls, (onModelLoaded)=>{
-      const interactionHandler = new InteractionHandler(scene, camera, renderer, onModelLoaded, handlePointClick);
+      const interactionHandler = new InteractionHandler(scene, camera, renderer, onModelLoaded, handlePointClick, isEditMode);
       
       getAnnotationData(productId, interactionHandler);
     });
-    
+
+    // if (isEditMode) {
+    //   // Code to enable editing, such as showing UI or enabling interaction handlers for adding points
+    //   console.log('Editing enabled');
+    // } else {
+    //   // Code to disable editing
+    //   console.log('editing disabled');
+    // }
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -77,7 +82,7 @@ const ThreeContainer = ({apiURL, modelPath, productId}) => {
         window.removeEventListener('resize',onWindowResize, false);
         
       };
-    }, [apiURL, modelPath, productId]);
+    }, [ modelPath, productId]);
 
   return <div ref={mountRef} children class="box-content" style={{ width: '800px', height: '800px'}}>
     { initialized && (

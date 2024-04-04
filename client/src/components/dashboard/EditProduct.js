@@ -3,14 +3,13 @@ import { useParams } from 'react-router-dom';
 import productService from '../../services/productServices';
 import ThreeContainer from '../ThreeComponents/ThreeContainer';
 import UpdateForm from './UpdateForm'
-import { useAPI } from '../common/APIcontext';
 
 const EditProduct = () => {
-  const { apiURL } = useAPI();
   const { id } = useParams(); // This will get the product id from the URL
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [isEditMode, setIsEditMode] = useState(false); // enable add point editing
 
   useEffect(() => {
     
@@ -28,8 +27,10 @@ const EditProduct = () => {
         }
       };
 
-      fetchProduct();      
-  }, [id , refreshTrigger, apiURL]);
+      fetchProduct();
+      
+        
+  }, [id , refreshTrigger]);
 
   const handleSave = async (updateProduct) => {
     try{
@@ -41,20 +42,18 @@ const EditProduct = () => {
     }
   };
 
-  const handleNameChange = (e) => {
-    setProduct({ ...product, name: e.target.value });
+  const toggleEditMode = () => {
+    setIsEditMode(!isEditMode);
   };
 
-  const handleDescriptionChange = (e) => {
-    setProduct({ ...product, description: e.target.value });
-    console.log('Description Changed',e.description.value);
-    
-  };
-
+  
   return (
     <div class ="flex flex-row">
       <div class = "basis-1/2 h-700 w-700">
-        { !isLoading && product && <ThreeContainer apiURL={ apiURL } modelPath={ product.modelFile } productId={product._id} />}
+        { !isLoading && product && <ThreeContainer  modelPath={ product.modelFile } productId={product._id} isEditMode={isEditMode} />
+        }
+        <button onClick={toggleEditMode} class="inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-4">{isEditMode ? "Stop Editing" : "Edit Points"}</button>
+
       </div>      
       <div class = "flex-basis: 100% h-700 w-700 mx-10 ">
         <UpdateForm

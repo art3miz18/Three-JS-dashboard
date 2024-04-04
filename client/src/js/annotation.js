@@ -21,7 +21,6 @@ export const getAnnotations = () => {
     // const annotations = getAnnotations();
     // return annotations.find(a => a.annotationID.annotationID === id);
     const annotationData = await productServices.getAnnotationById(productId, annotationId);
-    console.log('annotation Data', annotationData);
     return annotationData;
   };
   

@@ -51,7 +51,7 @@ class InteractionHandler {
             mouse.x = (x / rect.width ) * 2 - 1;
             mouse.y = -(y/ rect.height ) * 2 + 1;
             
-            if(Math.abs(mouse.x - event.clientX) > 10 || Math.abs(mouse.y -event.clientY) > 10){ 
+            if(Math.abs(mouse.x - event.clientX) > 10 || Math.abs(mouse.y -event.clientY) > 10){
                 isDragging = true;
             }
     
