@@ -121,9 +121,12 @@ const DeleteProductById = async (productId) => {
   };
 
   export const getProductURL = (productID) =>{
+    const userObject = JSON.parse(localStorage.getItem('user'));
+    const userID = userObject.user._id
     const productData = {
-      getProduct: `${API_URL}/public/details/${productID}`,
-      getAnnotations: `${API_URL}${productID}/annotations`
+      getProduct: `${API_URL}public/details/${productID}`,
+      getAnnotations: `${API_URL}${productID}/annotations`,
+      getAllProducts: `${API_URL}public/${userID}`
     };
     return productData;
   };

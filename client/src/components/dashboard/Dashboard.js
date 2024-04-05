@@ -24,13 +24,8 @@ const Dashboard = () => {
 
   //Update Product details
   const EditProduct = (product) =>{
-    // console.log('Edit called on product', product);
     setSelectedProductId(product._id);
     navigate(`/edit-product/${product._id}`);
-    // if(selectedProductId){
-    //   console.log('setting product view');
-    //   setView('editProduct');
-    // }
   };
 
   return (

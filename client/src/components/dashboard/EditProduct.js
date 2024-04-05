@@ -10,6 +10,8 @@ const EditProduct = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isEditMode, setIsEditMode] = useState(false); // enable add point editing
+  const interactionHandlerRef = useRef(null);  
+  const newEditMode = !isEditMode;
 
   useEffect(() => {
     
@@ -23,7 +25,6 @@ const EditProduct = () => {
           // Handle error, possibly redirect back or show a message
         } finally{
           setIsLoading(false);
-          console.log('new product details', product );
         }
       };
 
@@ -42,17 +43,24 @@ const EditProduct = () => {
     }
   };
 
+
+  // Toggling editing of points
   const toggleEditMode = () => {
-    setIsEditMode(!isEditMode);
+    setIsEditMode(newEditMode);
+    if(interactionHandlerRef.current){
+      interactionHandlerRef.current.setEditMode(newEditMode)
+    }
   };
 
   
   return (
     <div class ="flex flex-row">
       <div class = "basis-1/2 h-700 w-700">
-        { !isLoading && product && <ThreeContainer  modelPath={ product.modelFile } productId={product._id} isEditMode={isEditMode} />
+        { !isLoading && product && <ThreeContainer  modelPath={ product.modelFile } productId={product._id} interactionHandlerRef={interactionHandlerRef} />
         }
-        <button onClick={toggleEditMode} class="inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-4">{isEditMode ? "Stop Editing" : "Edit Points"}</button>
+        <button onClick={toggleEditMode} class="inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-4" >
+          {isEditMode ? "Stop Editing" : "Edit Points"}
+        </button>
 
       </div>      
       <div class = "flex-basis: 100% h-700 w-700 mx-10 ">

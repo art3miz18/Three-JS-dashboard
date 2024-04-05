@@ -4,7 +4,6 @@ import { adjustCameraToFitObject } from './cameraUtil';
 export const loadModel = (scene, modelPath, camera, controls, onLoadCallback) => {
   const loader = new GLTFLoader();
   const modelFilePath = `${modelPath}`; 
-  console.log('modelPath', modelFilePath);
   loader.load(modelFilePath, gltf => {
     const model = gltf.scene;
     processModel(model, scene, camera, controls, onLoadCallback);

@@ -44,7 +44,6 @@ export const getAnnotations = () => {
   export const getAnnotationData = async (productID, interactionHandler)=> {
     try{
       const annotations = await productServices.fetchAnnotations(productID);
-      console.log("found annotation data", annotations);
       // createAnnotations(annotations);
       interactionHandler.addAnnotations(annotations);
       if(!annotations){

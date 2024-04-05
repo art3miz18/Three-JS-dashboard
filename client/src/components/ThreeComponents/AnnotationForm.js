@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../styles/annotationPanel.css';
 
-const AnnotationForm = ({ annotationData, selectedPoint, onSave, onCancel }) => {
+const AnnotationForm = ({ annotationData, selectedPoint, onSave, onEdit, onDelete }) => {
   const [title, setTitle] = useState( selectedPoint ? selectedPoint.title : '');
   const [description, setDescription] = useState( selectedPoint ? selectedPoint.description : '');
   const annotationID = selectedPoint;
@@ -22,7 +22,7 @@ const AnnotationForm = ({ annotationData, selectedPoint, onSave, onCancel }) => 
       <form onSubmit={handleSubmit}>
         <div>
           Annotation ID: 
-          <span>{annotationID}</span> {/* Display the annotationID */}
+          <span>{annotationID}</span> 
         </div>
         <label>
           Title:
@@ -32,8 +32,15 @@ const AnnotationForm = ({ annotationData, selectedPoint, onSave, onCancel }) => 
           Description:
           <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
         </label>
-        <button type="submit" >Save</button>
-        <button type="button" onClick={onCancel}>Cancel</button>
+          <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-4">
+            Save
+          </button>
+          <button type="button" onClick={()=> onEdit()} class="inline-flex items-center rounded-md bg-orange-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-4">
+            Edit
+          </button>
+          <button type="button" onClick={()=> onDelete()} class="inline-flex items-center rounded-md bg-red-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-4">
+            Delete
+          </button>
       </form>
     </div>
   );

@@ -19,7 +19,7 @@ export const adjustCameraToFitObject = (scene, camera, object, controls) => {
     const cameraToFarEdgeDistance = (minZ < 0) ? -minZ + cameraToCenterDistance : cameraToCenterDistance - minZ;
 
     camera.far = cameraToFarEdgeDistance * 10;
-    camera.near = camera.far / 100;
+    camera.near = 0.01; //camera.far / 100
     // console.log('far val: ', camera.far,'Near val: ', camera.near);
     camera.updateProjectionMatrix();
 
