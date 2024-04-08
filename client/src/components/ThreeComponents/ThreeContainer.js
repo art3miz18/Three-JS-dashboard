@@ -5,27 +5,28 @@ import { loadModel } from '../../three/loadModel';
 import { getAnnotationById, onSaveAnnotation, getAnnotationData } from '../../js/annotation';
 import InteractionHandler from '../../three/interactionHandler';
 
-const ThreeContainer = ({ modelPath, productId, interactionHandlerRef}) => {
+const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyManager, UpdateUndoRedoAvailability}) => {
   const mountRef = useRef(null);
   const [initialized, setInitialized] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [AnnotationPosition, setPosition] = useState(null);
   const [annotationData, setAnnotationData] = useState(null);
-  const [editState, setEditingAction] = useState(false);
-  // const interactionHandlerRef = useRef(null);
 
   const handlePointClick = (point, position, isNewPoint) => {
     if(!showForm){
-      console.log('clicked Point is new :', isNewPoint);
       setSelectedPoint(point);
       setPosition(position);
       setShowForm(true);
       if(!isNewPoint){
         const annotationID = point;
-         getAnnotationById(productId, annotationID).then( annotationData=>{
-          setAnnotationData(annotationData);
+        getAnnotationById(productId, annotationID).then( annotationData=>{
+        setAnnotationData(annotationData);
         });
+      }
+      else{
+        const nullData = '';
+        setAnnotationData(nullData);
       }
     }
   };
@@ -62,7 +63,9 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef}) => {
                                                         camera, 
                                                         renderer, 
                                                         onModelLoaded, 
-                                                        handlePointClick);
+                                                        handlePointClick,
+                                                        historyManager,
+                                                        UpdateUndoRedoAvailability);
       getAnnotationData(productId, interactionHandlerRef.current);
                                                       });
       

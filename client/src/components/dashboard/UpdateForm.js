@@ -3,7 +3,7 @@ import React, { useState, useEffect} from 'react';
 import productServices from '../../services/productServices';
 
 
-const UpdateForm = ({ product, onSave, OnDelete}) => {
+const UpdateForm = ({ product, onSave}) => {
   const [name ,setName] = useState('');
   const [description ,setDescription] = useState('');
   const [endPointURL ,setEndpointUrl] = useState('');
