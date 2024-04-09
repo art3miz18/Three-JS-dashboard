@@ -24,21 +24,28 @@ export const getAnnotations = () => {
     return annotationData;
   };
   
-  export const onSaveAnnotation = async (annotationID, productId) => {
-    const annotation = {
-      annotationID // Use annotationID as the unique identifier
-      // position: {x: position.x, y: position.y, z: position.z}
-    };
-
-     try {
-      await productServices.saveAnnotation(productId, annotationID);
-      console.log('Annotation saved successfully', );
-      // Optionally, refresh annotations here if you have a UI component displaying them
-    } catch (error) {
-      console.error('Error saving annotation:', error);
-    } 
-    // console.log('annotations ',annotation);
-    //handleSave(annotation);
+  export const onSaveAnnotation = async (annotationId, productId) => {
+    const annotationData = await productServices.getAnnotationById(productId, annotationId.annotationID);
+    if(annotationData){
+      console.log('Data exists on id', annotationId.annotationID);
+      try{
+        await productServices.updateAnnotation(productId, annotationId.annotationID, annotationId);
+        alert('annotation details updated');
+      } catch(error){
+        console.error('failed while updating annotation details!', error);
+      }
+    }
+    else{
+      console.log('New Data Found');
+      try {
+       await productServices.saveAnnotation(productId, annotationId);
+       console.log('Annotation saved successfully', );
+       // Optionally, refresh annotations here if you have a UI component displaying them
+     } catch (error) {
+       console.error('Error saving annotation:', error);
+     }
+    }
+    
   };
   
   export const getAnnotationData = async (productID, interactionHandler)=> {
@@ -52,5 +59,14 @@ export const getAnnotations = () => {
     }
     catch(error){
       console.error(error.message);
+    }
+  };
+
+  export const updateAnnotationData = async (productID, annotationData, annotationID)=> {
+    try{
+      await productServices.updateAnnotation(productID, annotationData, annotationID);
+      alert('annotation details updated');
+    } catch(error){
+      console.error('failed while updating annotation details!', error);
     }
   }

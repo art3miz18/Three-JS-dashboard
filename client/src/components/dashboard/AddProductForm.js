@@ -22,24 +22,10 @@ const AddProductForm = () => {
       images.forEach(image => {
         formData.append('images', image);
       });
-      
-      // Append the 3D model file
-      // For a single model file
       formData.append('modelFile', modelFile);
-
-      // Assuming annotations are collected as an array of objects
-      // formData.append('annotations', JSON.stringify(annotations));
-
-
-      // Call the service function to add a new product
-      await productService.addProduct(formData);
-
-      // Clear the form or give user feedback
+      await productService.addProduct(formData);      
       setProductName('');
-      setProductDescription('');
-      // Reset file input if needed
-      // setProductFile(null);
-
+      setProductDescription('');     
       alert('Product added successfully!');
     } catch (error) {
       console.error('Error adding product:', error);

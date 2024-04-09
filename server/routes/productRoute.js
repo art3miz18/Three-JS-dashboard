@@ -184,7 +184,7 @@ async function getProduct(req, res, next) {
     }
   });
   // post new annotation or update existing data  
-      router.post('/products/:productId/annotations', async (req, res) => {
+      router.post('/:productId/annotations', async (req, res) => {
           const { productId } = req.params;
           const newAnnotation = req.body; // Assuming this contains the annotation detail
         
@@ -207,13 +207,13 @@ async function getProduct(req, res, next) {
         });
 
   // Adding new updates to added points
-      router.put('/products/:productId/annotations/:annotationId',auth, async (req, res) => {
+      router.put('/:productId/annotations/:annotationId', async (req, res) => {
         try {
           const { productId, annotationId } = req.params;
           const updateVal = req.body; // This is the updated annotation data
 
           // First, find the ProductAnnotations document for the given productId
-          const productAnnotations = await ProductAnnotations.findOne({ productId, user: req.user._id });
+          const productAnnotations = await Annotation.findOne({ productId });
 
           if (!productAnnotations) {
               return res.status(404).json({ message: 'Product not found or user not authorized' });

@@ -6,15 +6,19 @@ class InteractionHandler {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
+        this.material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5});
+
         this.model = model;
         this.handlePointClick = handlePointClick;
         this.historyManager = historyManager;
         this.isEditMode = false;
         this.scale = this.calculateScale();
+
         this.updateUndoRedoAvailability = UpdateUndoRedoAvailability;
         this.initialAnnotations = [];
         this.points = [];
         this.ActivePoint = ''; // storing active point details for position update
+        this.pointReposition ='';
         this.IsNewPoint = true;
         this.initialPosition = null;
 
@@ -42,7 +46,7 @@ class InteractionHandler {
 
     setupInteractionHandler() {
         const raycaster = new THREE.Raycaster();
-        const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5});
+        // const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5});
         const mouse = new THREE.Vector2(); // Get the bounding rectangle of the canvas
         const rect = this.renderer.domElement.getBoundingClientRect();
         let isDragging = false;
@@ -121,7 +125,7 @@ class InteractionHandler {
         const onMouseUp = (event) => {
             event.preventDefault();
             if(!isDragging && this.isEditMode) {
-                this.checkIntersections(mouse, raycaster, material);
+                this.checkIntersections(mouse, raycaster, this.material);
             }
         };
         
@@ -157,7 +161,12 @@ class InteractionHandler {
                     const intersect = intersects[0];
                     this.ActivePoint.position.copy(intersect.point);                    
                     this.saveHistory(intersect); // Save Undo Redo actions
-                    this.handlePointClick(this.ActivePoint.uuid, this.ActivePoint.position, true);
+                    if(this.ActivePoint.userData.HasData){
+                        this.handlePointClick(this.ActivePoint.uuid, this.ActivePoint.position, false);
+                    }
+                    else{
+                        this.handlePointClick(this.ActivePoint.uuid, this.ActivePoint.position, true);
+                    }
                 }                
             }
             return;
@@ -181,39 +190,54 @@ class InteractionHandler {
                 this.handlePointClick(this.ActivePoint.uuid, this.ActivePoint.position, true);
             }
             else if(intersects[0].object.userData.IsAnnotationPoint && intersects[0].object.userData.HasData ){
+                // this.ActivePoint = intersects[0];
                 this.handlePointClick(intersects[0].object.uuid, intersects[0].object.position, false);
             }
         }
     }
 
+    createNewAnnotation(uuid, position){
+        const sphereGeometry = new THREE.SphereGeometry(this.scale, 32, 32);
+        const sphere = new THREE.Mesh(sphereGeometry, this.material);
+        sphere.position.copy(position);        
+        sphere.userData.IsAnnotationPoint = true;
+        sphere.uuid = uuid;
+        this.scene.add(sphere);
+        this.addPoint(sphere);
+    }
     
     //#region Creating Initial Annotations
     createInitialAnnotations() {
         this.initialAnnotations.forEach(annotation => {
-            this.createAnnotation(annotation);
+            this.createAnnotation(annotation, true);
         });
     }
     
-    createAnnotation(annotation) {
+    createAnnotation(annotation, hasData) {
         const sphereGeometry = new THREE.SphereGeometry(this.scale, 32, 32);
         const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
         const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);        
         sphere.position.set(annotation.position.x, annotation.position.y, annotation.position.z);
-        sphere.userData = { IsAnnotationPoint: true, annotationID: annotation.annotationID, HasData: true };
+        sphere.userData = { IsAnnotationPoint: true, annotationID: annotation.annotationID, HasData: hasData };
         sphere.uuid = annotation.annotationID;
         this.scene.add(sphere);
+        this.addPoint(sphere);
+        if(!hasData){
+            this.ActivePoint = sphere;
+            this.handlePointClick(this.ActivePoint.uuid, this.ActivePoint.position, true);
+        }
     }
     
     addAnnotations(annotations) {
         this.initialAnnotations = annotations;
         this.createInitialAnnotations();
     }
+    
     //#endregion
     //#region History Managment of new points
     saveHistory(intersect){
         if(this.initialPosition && !this.initialPosition.equals(intersect.point)){ 
             let uid = this.ActivePoint.uuid;
-            let actPosi = this.ActivePoint.position;
             let initPos = this.initialPosition;
             this.historyManager.addAction({
                 do: ()=> {this.setPosition(uid, intersect.point)},
@@ -228,24 +252,56 @@ class InteractionHandler {
     }
     
     findPointById(uuid){
-        return this.points.find(p => p.uuid === uuid);
+        const pointData = this.points.find(p => p.uuid === uuid.annotationID);
+        console.log('pointData ', pointData);
+        return pointData        
     }
     
     setPosition(uuid, position){
-        const point = this.findPointById(uuid); //this.ActivePoint;
-        if(point) {
-            
+        const point = this.ActivePoint; //this.findPointById(uuid); 
+        if(point) {            
             point.position.copy(position);
         }
-        else{
+        else if(!point){
             console.log('point not found bitch');
+            const annotation ={
+                annotationID: uuid,
+                position: position
+            }
+            // this.createNewAnnotation(uuid,position);
+            this.createAnnotation(annotation, false);
         }
     }
     //#endregion
     clearActivePoint(){
-        this.ActivePoint.userData.HasData = true;
-        this.points.push(this.ActivePoint); // add new point to points[] array
-        this.ActivePoint='';
+        if(this.ActivePoint){
+            this.ActivePoint.userData.HasData = true;
+            this.points.push(this.ActivePoint); // add new point to points[] array
+            this.ActivePoint='';
+        }
+    }
+
+    deleteActivePoint = async (uuid) => {
+        const pointIndex = await this.points.findIndex(p => p.uuid === uuid.annotationID);
+        if(pointIndex > -1){
+            const [point] = this.points.splice(pointIndex, 1);
+            this.scene.remove(point);
+            this.ActivePoint='';
+        }
+        else{
+            console.log('no point found with ID');
+        }
+    }
+
+    editActivePoint = async(editID) => {
+        const point = await this.findPointById(editID);
+        if(point){
+            const init = this.initialAnnotations.find(p => p.uuid === editID.annotationID)
+            if(init){
+                console.log('Old data bc');
+            }
+            this.ActivePoint = point;
+        }
     }
 
     updateCursorStyle = (style) => {

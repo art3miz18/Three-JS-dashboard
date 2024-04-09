@@ -38,21 +38,23 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
     };
     onSaveAnnotation(annotationWithPosition , productId);
     if(interactionHandlerRef.current){
-      console.log('setting point creation back to active');
       interactionHandlerRef.current.clearActivePoint();
     }
     setShowForm(false);
     setPosition(null);   
   };
 
-  const handleEditPoint = () =>{
-    
+  const handleEditPoint = (EditID) =>{
+    interactionHandlerRef.current.editActivePoint(EditID);
     console.log('Editing is clicked');
   }
-  const handleDeletePoint = () =>{
+
+  const handleDeletePoint = (deleteID) =>{
     setShowForm(false);
-    console.log('Delete is clicked');
+    console.log('Delete is clicked ID', deleteID);
+    interactionHandlerRef.current.deleteActivePoint(deleteID);
   }
+
   useEffect(() => {
     const { scene, camera, renderer ,controls} = setupScene(); 
     setInitialized(true);

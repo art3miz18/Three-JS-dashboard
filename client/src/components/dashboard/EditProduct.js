@@ -68,11 +68,6 @@ const EditProduct = () => {
     setCanRedo(historyManager.redoStackSize > 0);
   };
   
-  const addActionToHistory = (action) => {
-    historyManager.addAction(action);
-    updateUndoRedoAvailability(); // Update button states
-  };
-  
   // Similar for undo and redo operations
   const performUndo = () => {
     historyManager.undo();
@@ -95,11 +90,26 @@ const EditProduct = () => {
                                                     UpdateUndoRedoAvailability = {updateUndoRedoAvailability}
                                                     />
         }
-        <button onClick={performUndo} disabled={!canUndo} class="mx-2 inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm   my-4">Undo</button>
-        <button onClick={performRedo} disabled={!canRedo} class="mx-2 inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm   my-4">Redo</button>
-        <button onClick={toggleEditMode} class="inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-4" >
-          {isEditMode ? "Stop Editing" : "Edit Points"}
-        </button>
+        <div class ="flex flex-row">
+          <div>
+              <label
+                className="mb-2 inline-block text-neutral-700 dark:text-neutral-200"
+              >
+              Zoom functionality
+              </label>
+              <input
+                type="range"
+                className="transparent h-1.5 w-full cursor-pointer appearance-none rounded-lg border-transparent bg-neutral-200"
+              />
+          </div>
+          <div>
+            <button onClick={performUndo} disabled={!canUndo} class="mx-2 inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm   my-4">Undo</button>
+            <button onClick={performRedo} disabled={!canRedo} class="mx-2 inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm   my-4">Redo</button>
+            <button onClick={toggleEditMode} class="inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-4" >
+              {isEditMode ? "Stop Editing" : "Edit Points"}
+            </button>
+          </div>
+        </div>
 
       </div>      
       <div class = "flex-basis: 100% h-700 w-700 mx-10 ">

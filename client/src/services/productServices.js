@@ -87,10 +87,20 @@ const DeleteProductById = async (productId) => {
 
   const saveAnnotation = async (productId, annotation) => {
     try {
-      const response = await axios.post(`${API_URL}/products/${productId}/annotations`, annotation);
+      const response = await axios.post(`${API_URL}/${productId}/annotations`, annotation);
       return response.data;
     } catch (error) {
       console.error('Error saving annotation:', error);
+      throw error;
+    }
+  };
+  
+  const updateAnnotation = async (productId, annotationID, annotation) => {
+    try {
+      const response = await axios.put(`${API_URL}/${productId}/annotations/${annotationID}`, annotation);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating annotation:', error);
       throw error;
     }
   };
@@ -131,5 +141,7 @@ const DeleteProductById = async (productId) => {
     return productData;
   };
 export default {
-  setBaseUrlProd, addProduct, getProducts, getProductById, updateProduct, DeleteProductById, saveAnnotation, fetchAnnotations, getAnnotationById, getProductURL
+  setBaseUrlProd, addProduct, getProducts, getProductById, updateProduct, DeleteProductById,
+  saveAnnotation, fetchAnnotations, updateAnnotation,
+  getAnnotationById, getProductURL
 };
