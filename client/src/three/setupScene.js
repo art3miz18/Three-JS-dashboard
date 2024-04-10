@@ -3,22 +3,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
 let controls;
-const setupCanvas = () => {
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight; 
-    
-    // Define the width of the sidebar based on your layout, adjust this as needed
-    const sidebarWidth = 250; // This value should match the actual width of your sidebar
-    
-    // Calculate the content area width
-    const contentWidth = windowWidth - sidebarWidth;
-    
-    // Set the height of the canvas to be the full height of the window minus any header/footer
-    const headerHeight = 0; // Replace with actual header height if present
-    const footerHeight = 0; // Replace with actual footer height if present
-    const contentHeight = windowHeight - headerHeight - footerHeight;
-    return { contentWidth, contentHeight} ;
-};
 
 export const setupScene = () => {
   const scene = new THREE.Scene();
@@ -36,6 +20,7 @@ export const setupScene = () => {
 
 // Newer Three.js versions use this setup for HDR environment maps
   controls = new OrbitControls( camera, renderer.domElement );
+  // controls.enableZoom = false;
   // controls.minDistance = 1.5;
   // controls.maxDistance = 6;
   const lights = setupLights(scene);

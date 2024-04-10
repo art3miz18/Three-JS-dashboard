@@ -1,8 +1,17 @@
 import * as THREE from 'three';
 
+
+const MIN_ZOOM_RATIO = 0.5; // Closest zoom (half the size of the object)
+const MAX_ZOOM_RATIO = 350.0; // Farthest zoom (twice the size of the object)
+let OBJ_SIZE = null;
+let OBJ_CENTER = null;
+
+
 export const adjustCameraToFitObject = (scene, camera, object, controls) => {
     
     const {center, size, boundingBox } = createBoundingBox(object, scene);
+    OBJ_SIZE = size;
+    OBJ_CENTER = center; 
     model = object;
     const maxDim = Math.max(size.x, size.y, size.z);
     const fov = camera.fov * (Math.PI / 180); //camera.fov = 60 ;
@@ -19,6 +28,7 @@ export const adjustCameraToFitObject = (scene, camera, object, controls) => {
     const cameraToFarEdgeDistance = (minZ < 0) ? -minZ + cameraToCenterDistance : cameraToCenterDistance - minZ;
 
     camera.far = cameraToFarEdgeDistance * 10;
+    
     camera.near = 0.01; //camera.far / 100
     // console.log('far val: ', camera.far,'Near val: ', camera.near);
     camera.updateProjectionMatrix();
@@ -90,5 +100,27 @@ export const calculateScaleFactor = ( camera, rendererDomElement) => {
     const fov = THREE.MathUtils.degToRad(camera.fov); // Convert FOV to radians
     const perspective = 0.5 * height / Math.tan(fov / 2);
     return perspective;
+  };
+
+  export const setZoomBasedOnSlider = (sliderValue, scene, camera, controls) => {
+    
+    const zoomRatio = THREE.MathUtils.lerp(MIN_ZOOM_RATIO, MAX_ZOOM_RATIO, sliderValue / 100);
+    // console.log('sliderValue', sliderValue);
+    // const {center, size} = createBoundingBox(model, scene); // `model` should be the object you want to zoom on
+    
+    // console.log(zoomRatio);
+    const size = OBJ_SIZE; // `model` should be the object you want to zoom on
+    const center = OBJ_CENTER ; // `model` should be the object you want to zoom on
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = camera.fov * (Math.PI / 180);
+    
+    // Calculate the new camera position based on the zoom ratio
+    let cameraZ = Math.abs(maxDim / 2 * Math.tan(fov * 2)) * zoomRatio;
+    camera.position.z = center.z + cameraZ;  
+    camera.updateProjectionMatrix();  
+    if (controls) {
+      controls.update();
+      controls.target.set(center.x, center.y, center.z);
+    }
   };
   

@@ -2,10 +2,11 @@ import React, { useEffect, useRef , useState } from 'react';
 import AnnotationForm  from '../ThreeComponents/AnnotationForm';
 import { setupScene } from '../../three/setupScene';
 import { loadModel } from '../../three/loadModel';
+import { setZoomBasedOnSlider } from '../../three/cameraUtil';
 import { getAnnotationById, onSaveAnnotation, getAnnotationData } from '../../js/annotation';
 import InteractionHandler from '../../three/interactionHandler';
 
-const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyManager, UpdateUndoRedoAvailability}) => {
+const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyManager, UpdateUndoRedoAvailability, threeComponentRef}) => {
   const mountRef = useRef(null);
   const [initialized, setInitialized] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -51,7 +52,6 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
 
   const handleDeletePoint = (deleteID) =>{
     setShowForm(false);
-    console.log('Delete is clicked ID', deleteID);
     interactionHandlerRef.current.deleteActivePoint(deleteID);
   }
 
@@ -70,7 +70,14 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
                                                         UpdateUndoRedoAvailability);
       getAnnotationData(productId, interactionHandlerRef.current);
                                                       });
-      
+    
+    // if (interactionHandlerRef.current && interactionHandlerRef.current.camera) {
+    // }
+    threeComponentRef.current = (newZoomLevel) =>{
+
+      setZoomBasedOnSlider(newZoomLevel, scene, camera, controls);
+    };
+    
     const animate = () => {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);

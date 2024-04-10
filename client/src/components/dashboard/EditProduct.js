@@ -12,13 +12,15 @@ const EditProduct = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isEditMode, setIsEditMode] = useState(false); // enable add point editing
   const interactionHandlerRef = useRef(null);
+  const threeComponentRef = useRef(null);
   const historyRef = useRef(null);  
   const newEditMode = !isEditMode;
 
   // In EditProduct component
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-
+  // Zoom level
+  const [zoomLevel, setZoomLevel] = useState(0.5);
   useEffect(() => {
     
     const fetchProduct = async () => {
@@ -31,6 +33,7 @@ const EditProduct = () => {
           // Handle error, possibly redirect back or show a message
         } finally{
           setIsLoading(false);
+          setZoomLevel(0.5);
         }
       };
 
@@ -79,6 +82,13 @@ const EditProduct = () => {
     updateUndoRedoAvailability(); // Update button states
   };
 
+  const handleZoomChange = (event) => {
+    const zoomValue = parseFloat(event.target.value); // Convert value to float
+    setZoomLevel(zoomValue); // Set the new zoom level
+    if(threeComponentRef.current){
+      threeComponentRef.current(zoomValue);
+    }
+  };
   
   return (
     <div class ="flex flex-row">
@@ -88,19 +98,32 @@ const EditProduct = () => {
                                                     interactionHandlerRef={interactionHandlerRef}
                                                     historyManager = { historyManager }
                                                     UpdateUndoRedoAvailability = {updateUndoRedoAvailability}
+                                                    threeComponentRef={threeComponentRef}
                                                     />
         }
-        <div class ="flex flex-row">
-          <div>
-              <label
-                className="mb-2 inline-block text-neutral-700 dark:text-neutral-200"
-              >
-              Zoom functionality
-              </label>
+        <div class ="flex flex-row "> 
+          <div class="w-200 " style={{ flex :'auto'  }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between'}}>
+                <span>Min Zoom</span>
+                <span>Max Zoom</span>
+              </div>              
               <input
                 type="range"
+                min="0"    // Minimum zoom level
+                max="1"    // Maximum zoom level
+                step ="0.01"
+                value={zoomLevel}
+                onChange={handleZoomChange}
                 className="transparent h-1.5 w-full cursor-pointer appearance-none rounded-lg border-transparent bg-neutral-200"
-              />
+              /> 
+              <div
+                style={{
+                  position: 'relative',
+                  left: `${zoomLevel * 100}%`,
+                  transform: 'translateX(-50%)',
+                }}>
+                {zoomLevel}
+              </div>
           </div>
           <div>
             <button onClick={performUndo} disabled={!canUndo} class="mx-2 inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm   my-4">Undo</button>
