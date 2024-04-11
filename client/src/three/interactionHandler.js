@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createBoundingBox } from './cameraUtil';
 
 class InteractionHandler {
-    constructor(scene, camera, renderer, model, handlePointClick, historyManager, UpdateUndoRedoAvailability){
+    constructor(scene, camera, renderer, model, handlePointClick, historyManager, UpdateUndoRedoAvailability, onAnnotationsUpdate){
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
@@ -29,9 +29,15 @@ class InteractionHandler {
         this.setPosition = this.setPosition.bind(this);
 
 
+        this.onAnnotationsChange = this.onAnnotationsChange.bind(this);
+    
+        this.emitAnnotationChange = this.emitAnnotationChange.bind(this);
+            
         this.setupInteractionHandler();
         this.updateCursorStyle();
+        this.onAnnotationChangeCallbacks = [];
     }
+
 
     setEditMode(isEditMode){
         this.isEditMode = isEditMode;
@@ -195,7 +201,17 @@ class InteractionHandler {
             }
         }
     }
+    // Register Callbacks
+    onAnnotationsChange(callback) {
+        this.onAnnotationChangeCallbacks.push(callback);
+        console.log(callback);
+    }
 
+    emitAnnotationChange(annotation) {
+        this.onAnnotationChangeCallbacks.forEach(callback => callback(annotation));
+        console.debug('emitAnnotationChange', annotation);
+    }
+    
     createNewAnnotation(uuid, position){
         const sphereGeometry = new THREE.SphereGeometry(this.scale, 32, 32);
         const sphere = new THREE.Mesh(sphereGeometry, this.material);
@@ -222,12 +238,24 @@ class InteractionHandler {
         sphere.uuid = annotation.annotationID;
         this.scene.add(sphere);
         this.addPoint(sphere);
+
+
         if(!hasData){
             this.ActivePoint = sphere;
             this.handlePointClick(this.ActivePoint.uuid, this.ActivePoint.position, true);
         }
+        this.emitAnnotationChange({
+            action: 'add',
+            annotation:{
+                id: annotation.annotationID,
+                position: annotation.position,
+                details: annotation.title,
+                description: annotation.description             
+            }
+        })
     }
     
+    //Add new annotations these is triggered from annotation.js when the data is recieved through the API
     addAnnotations(annotations) {
         this.initialAnnotations = annotations;
         this.createInitialAnnotations();
@@ -247,16 +275,19 @@ class InteractionHandler {
         }
     }
 
+    // Add point to the list
     addPoint(point){
         this.points.push(point);
     }
     
+    //Find point from current array of points added to the scene
     findPointById(uuid){
         const pointData = this.points.find(p => p.uuid === uuid.annotationID);
         console.log('pointData ', pointData);
         return pointData        
     }
     
+    //SetPosition is action that is saved in history Manager to use it to redo and Undo actions
     setPosition(uuid, position){
         const point = this.ActivePoint; //this.findPointById(uuid); 
         if(point) {            
@@ -273,6 +304,8 @@ class InteractionHandler {
         }
     }
     //#endregion
+
+    //Cleaning up the referemce to active annotation point
     clearActivePoint(){
         if(this.ActivePoint){
             this.ActivePoint.userData.HasData = true;
@@ -281,6 +314,7 @@ class InteractionHandler {
         }
     }
 
+    //On Delete button callback to delete the annotation from the annotation form
     deleteActivePoint = async (uuid) => {
         const pointIndex = await this.points.findIndex(p => p.uuid === uuid.annotationID);
         if(pointIndex > -1){
@@ -293,6 +327,7 @@ class InteractionHandler {
         }
     }
 
+    //On edit Button Callback to edit certain specified point
     editActivePoint = async(editID) => {
         const point = await this.findPointById(editID);
         if(point){

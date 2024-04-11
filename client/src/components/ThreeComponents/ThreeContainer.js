@@ -5,6 +5,7 @@ import { loadModel } from '../../three/loadModel';
 import { setZoomBasedOnSlider } from '../../three/cameraUtil';
 import { getAnnotationById, onSaveAnnotation, getAnnotationData } from '../../js/annotation';
 import InteractionHandler from '../../three/interactionHandler';
+import  AnnotationManager  from '../../three/annotationManager'
 
 const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyManager, UpdateUndoRedoAvailability, threeComponentRef}) => {
   const mountRef = useRef(null);
@@ -13,7 +14,9 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [AnnotationPosition, setPosition] = useState(null);
   const [annotationData, setAnnotationData] = useState(null);
-
+  const [threeObjects, setThreeObjects] = useState({ scene: null, camera: null, renderer: null, controls: null });
+  
+  
   const handlePointClick = (point, position, isNewPoint) => {
     if(!showForm){
       setSelectedPoint(point);
@@ -57,8 +60,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
 
   useEffect(() => {
     const { scene, camera, renderer ,controls} = setupScene(); 
-    setInitialized(true);
-    
+    setThreeObjects({ scene, camera, renderer ,controls});
     mountRef.current.appendChild(renderer.domElement);
     loadModel(scene, modelPath, camera,  controls, (onModelLoaded)=>{
       interactionHandlerRef.current = new InteractionHandler(scene,
@@ -70,11 +72,9 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
                                                         UpdateUndoRedoAvailability);
       getAnnotationData(productId, interactionHandlerRef.current);
                                                       });
+    setInitialized(true);
     
-    // if (interactionHandlerRef.current && interactionHandlerRef.current.camera) {
-    // }
     threeComponentRef.current = (newZoomLevel) =>{
-
       setZoomBasedOnSlider(newZoomLevel, scene, camera, controls);
     };
     
@@ -82,6 +82,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
     };
+
     animate(); 
     
     const onWindowResize = () => {
@@ -108,8 +109,13 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
     }, [ modelPath, productId, interactionHandlerRef]);
 
   return <div ref={mountRef} children class="box-content" style={{ width: '800px', height: '800px'}}>
-    { initialized && (
-        <>          
+    { initialized &&  (
+        <>   
+        {(interactionHandlerRef.current &&        
+          <AnnotationManager  interactionHandlerRef= {interactionHandlerRef.current} 
+                              camera= {threeObjects.camera}
+                              renderer= {threeObjects.renderer} />    
+        )}     
           {showForm && (
             <AnnotationForm
               annotationData={annotationData}

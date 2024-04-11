@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
 
-const MIN_ZOOM_RATIO = 0.5; // Closest zoom (half the size of the object)
-const MAX_ZOOM_RATIO = 350.0; // Farthest zoom (twice the size of the object)
+const MIN_ZOOM_RATIO = 1; // Closest zoom (half the size of the object)
+const MAX_ZOOM_RATIO = 300; // Farthest zoom (twice the size of the object)
 let OBJ_SIZE = null;
 let OBJ_CENTER = null;
 
@@ -116,11 +116,12 @@ export const calculateScaleFactor = ( camera, rendererDomElement) => {
     
     // Calculate the new camera position based on the zoom ratio
     let cameraZ = Math.abs(maxDim / 2 * Math.tan(fov * 2)) * zoomRatio;
-    camera.position.z = center.z + cameraZ;  
+    // camera.position.z = center.z + cameraZ;
+    camera.zoom = zoomRatio;  
     camera.updateProjectionMatrix();  
     if (controls) {
       controls.update();
-      controls.target.set(center.x, center.y, center.z);
     }
+    camera.lookAt(center);
   };
-  
+   
