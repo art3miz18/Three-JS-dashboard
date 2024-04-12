@@ -1,8 +1,6 @@
 import * as THREE from 'three';
-import { createBoundingBox } from './cameraUtil';
-
-class InteractionHandler {
-    constructor(scene, camera, renderer, model, handlePointClick, historyManager, UpdateUndoRedoAvailability, onAnnotationsUpdate){
+import { createBoundingBox } from './cameraUtil';class InteractionHandler {
+    constructor(scene, camera, renderer, model, handlePointClick, historyManager, UpdateUndoRedoAvailability, setAnnotations){
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
@@ -13,6 +11,7 @@ class InteractionHandler {
         this.historyManager = historyManager;
         this.isEditMode = false;
         this.scale = this.calculateScale();
+        this.setAnnotations = setAnnotations;
 
         this.updateUndoRedoAvailability = UpdateUndoRedoAvailability;
         this.initialAnnotations = [];
@@ -28,10 +27,6 @@ class InteractionHandler {
         this.createAnnotation = this.createAnnotation.bind(this);
         this.setPosition = this.setPosition.bind(this);
 
-
-        this.onAnnotationsChange = this.onAnnotationsChange.bind(this);
-    
-        this.emitAnnotationChange = this.emitAnnotationChange.bind(this);
             
         this.setupInteractionHandler();
         this.updateCursorStyle();
@@ -202,15 +197,16 @@ class InteractionHandler {
         }
     }
     // Register Callbacks
-    onAnnotationsChange(callback) {
-        this.onAnnotationChangeCallbacks.push(callback);
-        console.log(callback);
-    }
+    // onAnnotationsChange(callback) {
+    //     this.onAnnotationChangeCallbacks.push(callback);
+    //     console.log('On Annotation Change',callback);
+    // }
 
-    emitAnnotationChange(annotation) {
-        this.onAnnotationChangeCallbacks.forEach(callback => callback(annotation));
-        console.debug('emitAnnotationChange', annotation);
-    }
+    // emitAnnotationChange= (annotation) => {
+    // this.onAnnotationChangeCallbacks.forEach(callback => callback(annotation));
+    // // console.log    
+    // console.log('emitAnnotationChange', annotation);
+    // }
     
     createNewAnnotation(uuid, position){
         const sphereGeometry = new THREE.SphereGeometry(this.scale, 32, 32);
@@ -238,21 +234,24 @@ class InteractionHandler {
         sphere.uuid = annotation.annotationID;
         this.scene.add(sphere);
         this.addPoint(sphere);
-
-
+        
+        if(typeof this.setAnnotations === 'function') {
+            const newAnnotation = {
+                id: annotation.annotationID,
+                position: annotation.position,
+                details: annotation.title,
+                description: annotation.description  
+                };
+                // setTimeout(() => this.setAnnotations(prevAnnotations => [...prevAnnotations, newAnnotation]), 0);
+                // console.log('adding annotataion to cunt', annotation);
+                this.setAnnotations(prevAnnotations => [...prevAnnotations, newAnnotation]);
+        }
+         
         if(!hasData){
             this.ActivePoint = sphere;
             this.handlePointClick(this.ActivePoint.uuid, this.ActivePoint.position, true);
         }
-        this.emitAnnotationChange({
-            action: 'add',
-            annotation:{
-                id: annotation.annotationID,
-                position: annotation.position,
-                details: annotation.title,
-                description: annotation.description             
-            }
-        })
+        
     }
     
     //Add new annotations these is triggered from annotation.js when the data is recieved through the API

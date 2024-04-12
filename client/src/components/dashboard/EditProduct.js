@@ -4,6 +4,7 @@ import productService from '../../services/productServices';
 import ThreeContainer from '../ThreeComponents/ThreeContainer';
 import UpdateForm from './UpdateForm'
 import { HistoryManager } from '../../three/historyManager';
+import { AnnotationProvider } from '../../js/AnnotationContext';
 
 const EditProduct = () => {
   const { id } = useParams(); // This will get the product id from the URL
@@ -93,14 +94,16 @@ const EditProduct = () => {
   return (
     <div class ="flex flex-row">
       <div class = "basis-1/2 h-700 w-700">
-        { !isLoading && product && <ThreeContainer  modelPath={ product.modelFile }   
-                                                    productId={product._id} 
-                                                    interactionHandlerRef={interactionHandlerRef}
-                                                    historyManager = { historyManager }
-                                                    UpdateUndoRedoAvailability = {updateUndoRedoAvailability}
-                                                    threeComponentRef={threeComponentRef}
-                                                    />
-        }
+        <AnnotationProvider>
+          { !isLoading && product && <ThreeContainer  modelPath={ product.modelFile }   
+                                                      productId={product._id} 
+                                                      interactionHandlerRef={interactionHandlerRef}
+                                                      historyManager = { historyManager }
+                                                      UpdateUndoRedoAvailability = {updateUndoRedoAvailability}
+                                                      threeComponentRef={threeComponentRef}
+                                                      />
+          }
+        </AnnotationProvider>
         <div class ="flex flex-row "> 
           <div class="w-200 " style={{ flex :'auto'  }}>
               <div style={{ display: 'flex', justifyContent: 'space-between'}}>

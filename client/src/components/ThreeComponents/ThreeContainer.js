@@ -1,11 +1,13 @@
-import React, { useEffect, useRef , useState } from 'react';
+import React, { useContext ,useEffect, useRef , useState } from 'react';
 import AnnotationForm  from '../ThreeComponents/AnnotationForm';
 import { setupScene } from '../../three/setupScene';
 import { loadModel } from '../../three/loadModel';
 import { setZoomBasedOnSlider } from '../../three/cameraUtil';
 import { getAnnotationById, onSaveAnnotation, getAnnotationData } from '../../js/annotation';
 import InteractionHandler from '../../three/interactionHandler';
-import  AnnotationManager  from '../../three/annotationManager'
+import  AnnotationManager  from '../../three/annotationManager';
+import { AnnotationContext } from '../../js/AnnotationContext';
+
 
 const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyManager, UpdateUndoRedoAvailability, threeComponentRef}) => {
   const mountRef = useRef(null);
@@ -15,7 +17,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
   const [AnnotationPosition, setPosition] = useState(null);
   const [annotationData, setAnnotationData] = useState(null);
   const [threeObjects, setThreeObjects] = useState({ scene: null, camera: null, renderer: null, controls: null });
-  
+  const { setAnnotations } = useContext(AnnotationContext);
   
   const handlePointClick = (point, position, isNewPoint) => {
     if(!showForm){
@@ -69,7 +71,8 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
                                                         onModelLoaded, 
                                                         handlePointClick,
                                                         historyManager,
-                                                        UpdateUndoRedoAvailability);
+                                                        UpdateUndoRedoAvailability,
+                                                        setAnnotations);
       getAnnotationData(productId, interactionHandlerRef.current);
                                                       });
     setInitialized(true);
@@ -112,8 +115,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
     { initialized &&  (
         <>   
         {(interactionHandlerRef.current &&        
-          <AnnotationManager  interactionHandlerRef= {interactionHandlerRef.current} 
-                              camera= {threeObjects.camera}
+          <AnnotationManager  camera= {threeObjects.camera}
                               renderer= {threeObjects.renderer} />    
         )}     
           {showForm && (
