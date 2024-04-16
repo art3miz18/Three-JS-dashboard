@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { loadModelFromFile } from './loadModel';
-import { setupInteractionHandler } from './interactionHandler';
 
-const DragAndDrop = ({ handlePointClick ,onModelLoaded, scene, camera, controls, renderer}) => { //scene, camera, controls, renderer
+const DragAndDrop = ({onModelLoaded, scene, camera, controls}) => { 
   const [isDragging, setIsDragging] = useState(false);  
   const [fileLoaded, setFileLoaded] = useState(false);  
   const cleanupInteractionRef = useRef(null);
@@ -16,8 +15,7 @@ const DragAndDrop = ({ handlePointClick ,onModelLoaded, scene, camera, controls,
       if (file) {
         loadModelFromFile(file, camera, scene, controls,(loadedModel)=>{
           setFileLoaded(true);
-          modelFile = loadedModel;
-          cleanupInteractionRef.current = setupInteractionHandler(scene, camera, renderer, loadedModel, handlePointClick);          
+          modelFile = loadedModel;        
         });
         if (typeof onModelLoaded === 'function'){
           onModelLoaded();
