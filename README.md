@@ -59,10 +59,3 @@ Contributions are what make the open source community such an amazing place to l
 ## License
 Distributed under the MIT License. See `LICENSE` for more information.
 
----
-
-**Q1:** What additional tools or libraries could be integrated into this project to enhance its functionality or user experience?
-
-**Q2:** How can we optimize the performance of Three.js in this project to handle more complex 3D models?
-
-**Q3:** Could you provide a detailed guide on deploying this application to a cloud platform, such as AWS or Azure?
