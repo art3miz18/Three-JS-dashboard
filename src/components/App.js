@@ -2,7 +2,6 @@ import React, { useEffect, useRef , useState} from 'react';
 import { setupScene } from '../three/setupScene';
 import { loadModelFromFile } from '../three/loadModel';
 import DragAndDrop from '../three/dragAndDrop';
-import { getAnnotationById, onSaveAnnotation} from '../js/annotation';
 
 
 function App() {
