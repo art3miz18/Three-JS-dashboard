@@ -20,9 +20,6 @@ export const setupScene = () => {
 
 // Newer Three.js versions use this setup for HDR environment maps
   controls = new OrbitControls( camera, renderer.domElement );
-  // controls.enableZoom = false;
-  // controls.minDistance = 1.5;
-  // controls.maxDistance = 6;
   const lights = setupLights(scene);
   return { scene, camera, renderer, controls};
 };

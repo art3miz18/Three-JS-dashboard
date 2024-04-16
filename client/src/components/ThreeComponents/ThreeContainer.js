@@ -105,7 +105,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
       renderer.render(scene, camera);
       updateAnnotationPositions();
     };
-
+    
     animate(); 
     
     const onWindowResize = () => {
@@ -115,6 +115,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       controls.update();       
+      updateAnnotationPositions();
     };
     
     window.addEventListener('resize', onWindowResize, false);
