@@ -20,8 +20,8 @@ To get this project up and running on your local machine, follow these steps:
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/3d-product-viewer.git
-   cd 3d-product-viewer
+   git clone https://github.com/art3miz18/Three-JS-dashboard/tree/three-js-loader
+   cd three-js-loader
    ```
 
 2. **Install Dependencies**
