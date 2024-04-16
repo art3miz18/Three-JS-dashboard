@@ -240,7 +240,8 @@ import { createBoundingBox } from './cameraUtil';class InteractionHandler {
                 id: annotation.annotationID,
                 position: annotation.position,
                 details: annotation.title,
-                description: annotation.description  
+                description: annotation.description,
+                obj: sphere  
                 };
                 // setTimeout(() => this.setAnnotations(prevAnnotations => [...prevAnnotations, newAnnotation]), 0);
                 // console.log('adding annotataion to cunt', annotation);

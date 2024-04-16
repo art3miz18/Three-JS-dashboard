@@ -1,4 +1,4 @@
-import React, { useContext ,useEffect, useRef , useState } from 'react';
+import React, { useCallback, useContext ,useEffect, useRef , useState } from 'react';
 import AnnotationForm  from '../ThreeComponents/AnnotationForm';
 import { setupScene } from '../../three/setupScene';
 import { loadModel } from '../../three/loadModel';
@@ -7,7 +7,7 @@ import { getAnnotationById, onSaveAnnotation, getAnnotationData } from '../../js
 import InteractionHandler from '../../three/interactionHandler';
 import  AnnotationManager  from '../../three/annotationManager';
 import { AnnotationContext } from '../../js/AnnotationContext';
-
+import { toScreenPosition } from '../../js/projectionUtils'
 
 const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyManager, UpdateUndoRedoAvailability, threeComponentRef}) => {
   const mountRef = useRef(null);
@@ -17,8 +17,27 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
   const [AnnotationPosition, setPosition] = useState(null);
   const [annotationData, setAnnotationData] = useState(null);
   const [threeObjects, setThreeObjects] = useState({ scene: null, camera: null, renderer: null, controls: null });
-  const { setAnnotations } = useContext(AnnotationContext);
+  const { annotations ,setAnnotations } = useContext(AnnotationContext);
   
+  // You may want to maintain a state for annotation positions in ThreeContainer
+  const [annotationPositions, setAnnotationPositions] = useState({});
+
+  // Add a function to update annotation positions
+  const updateAnnotationPositions = useCallback(() => {
+    const newPositions = {};
+    
+    annotations.forEach(annotation => {
+      if (annotation && annotation.position) {
+        // Ensure toScreenPosition is imported correctly and works as expected
+        const screenPosition = toScreenPosition(annotation.obj, threeObjects.camera, threeObjects.renderer);
+        newPositions[annotation.id] = screenPosition;
+      }
+    });
+
+    setAnnotationPositions(newPositions);
+  }, [annotations]);
+
+
   const handlePointClick = (point, position, isNewPoint) => {
     if(!showForm){
       setSelectedPoint(point);
@@ -84,6 +103,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
     const animate = () => {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
+      updateAnnotationPositions();
     };
 
     animate(); 
@@ -94,8 +114,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
       renderer.setSize(width, height);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      controls.update();
-       
+      controls.update();       
     };
     
     window.addEventListener('resize', onWindowResize, false);
@@ -115,8 +134,9 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
     { initialized &&  (
         <>   
         {(interactionHandlerRef.current &&        
-          <AnnotationManager  camera= {threeObjects.camera}
-                              renderer= {threeObjects.renderer} />    
+          <AnnotationManager  camera = {threeObjects.camera}
+                              renderer = {threeObjects.renderer}
+                              annotationPositions = {annotationPositions} />    
         )}     
           {showForm && (
             <AnnotationForm
