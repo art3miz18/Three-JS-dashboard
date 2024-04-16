@@ -19,9 +19,10 @@ To get this project up and running on your local machine, follow these steps:
 
 1. **Clone the Repository**
 
-   ```bash
-   git clone https://github.com/art3miz18/Three-JS-dashboard/tree/three-js-loader
-   cd three-js-loader
+   ```bash    
+    git clone -b three-js-loader --single-branch https://github.com/art3miz18/Three-JS-dashboard.git
+    cd three-js-loader
+
    ```
 
 2. **Install Dependencies**
