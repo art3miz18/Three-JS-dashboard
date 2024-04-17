@@ -1,14 +1,16 @@
 import * as THREE from 'three';
 
-
 const MIN_ZOOM_RATIO = 1; // Closest zoom (half the size of the object)
 const MAX_ZOOM_RATIO = 300; // Farthest zoom (twice the size of the object)
 let OBJ_SIZE = null;
 let OBJ_CENTER = null;
+let Camera = null;
+let Controls = null;
 
 
 export const adjustCameraToFitObject = (scene, camera, object, controls) => {
-    
+    Camera = camera;
+    Controls = controls;
     const {center, size, boundingBox } = createBoundingBox(object, scene);
     OBJ_SIZE = size;
     OBJ_CENTER = center; 
@@ -105,10 +107,7 @@ export const calculateScaleFactor = ( camera, rendererDomElement) => {
   export const setZoomBasedOnSlider = (sliderValue, scene, camera, controls) => {
     
     const zoomRatio = THREE.MathUtils.lerp(MIN_ZOOM_RATIO, MAX_ZOOM_RATIO, sliderValue / 100);
-    // console.log('sliderValue', sliderValue);
-    // const {center, size} = createBoundingBox(model, scene); // `model` should be the object you want to zoom on
     
-    // console.log(zoomRatio);
     const size = OBJ_SIZE; // `model` should be the object you want to zoom on
     const center = OBJ_CENTER ; // `model` should be the object you want to zoom on
     const maxDim = Math.max(size.x, size.y, size.z);
@@ -125,3 +124,64 @@ export const calculateScaleFactor = ( camera, rendererDomElement) => {
     camera.lookAt(center);
   };
    
+  export const annotationToLookAt = (annotationPosition) =>{
+    // Assuming 'annotationPosition' is a THREE.Vector3
+    console.log('camera postion before lerping' , Camera.position);
+    const targetPosition = annotationPosition; // or apply an offset if needed
+    const offsetPosition = new THREE.Vector3(0, 0, 10); // Adjust the values as needed
+
+    // Calculate the camera position by pulling back along the camera's local Z-axis
+    const newCameraPosition = targetPosition.clone.add(offsetPosition.applyQuaternion(Camera.quaternion));
+
+    // Start values for interpolation
+    const startCameraPosition = Camera.position.clone();
+    const startCameraQuaternion = Camera.quaternion.clone();
+
+    // // Target values for quaternion slerp
+    // const endCameraQuaternion = new THREE.Quaternion().setFromUnitVectors(Camera.up, new THREE.Vector3(0, 1, 0)).multiply(new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(newCameraPosition, targetPosition, Camera.up)));
+
+    // Calculate the desired end rotation to look at the target
+    const desiredLookAtQuaternion = new THREE.Quaternion().setFromRotationMatrix(
+      new THREE.Matrix4().lookAt(newCameraPosition, targetPosition, Camera.up)
+    );
+
+
+    // Animation variables
+    let t = 0; // Interpolation parameter [0,1]
+    const duration = 1000; // Duration of the animation in milliseconds
+
+    function animateCamera(time) {
+      requestAnimationFrame(animateCamera);
+
+      // Update the interpolation parameter      
+      t += (time - lastTime) / duration;
+
+      if (t < 1) {
+        // Interpolate position
+        Camera.quaternion.slerpQuaternions(startCameraPosition, newCameraPosition, t);
+
+        // Linear interpolation of the position
+        Camera.position.lerpVectors(startCameraPosition, newCameraPosition, t);
+
+        // Update the camera matrix
+        // Camera.updateMatrixWorld();
+        Camera.updateProjectionMatrix();
+        Controls.update();
+      } else {
+        // Ensure the final values are set
+        Camera.quaternion.copy(desiredLookAtQuaternion);
+        Camera.position.copy(newCameraPosition);
+        Camera.updateMatrixWorld();
+        Controls.update();       
+        // Stop the animation when t >= 1
+        return;
+      }      
+      lastTime = time;
+    }
+    
+    
+    let lastTime = performance.now();
+    requestAnimationFrame(animateCamera);
+    console.log('camera postion before lerping' , Camera.position);
+
+  };

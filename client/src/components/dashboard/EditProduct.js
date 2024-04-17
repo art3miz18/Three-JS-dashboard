@@ -22,6 +22,7 @@ const EditProduct = () => {
   const [canRedo, setCanRedo] = useState(false);
   // Zoom level
   const [zoomLevel, setZoomLevel] = useState(0.5);
+  
   useEffect(() => {
     
     const fetchProduct = async () => {

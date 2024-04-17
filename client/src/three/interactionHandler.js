@@ -4,7 +4,7 @@ import { createBoundingBox } from './cameraUtil';class InteractionHandler {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
-        this.material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5});
+        this.material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5});
 
         this.model = model;
         this.handlePointClick = handlePointClick;
@@ -226,9 +226,9 @@ import { createBoundingBox } from './cameraUtil';class InteractionHandler {
     }
     
     createAnnotation(annotation, hasData) {
-        const sphereGeometry = new THREE.SphereGeometry(this.scale, 32, 32);
+        const sphereGeometry = new THREE.SphereGeometry(this.scale, 20, 20);
         const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
-        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);        
+        const sphere = new THREE.Mesh(sphereGeometry, this.material);      
         sphere.position.set(annotation.position.x, annotation.position.y, annotation.position.z);
         sphere.userData = { IsAnnotationPoint: true, annotationID: annotation.annotationID, HasData: hasData };
         sphere.uuid = annotation.annotationID;

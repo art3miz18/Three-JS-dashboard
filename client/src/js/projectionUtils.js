@@ -1,7 +1,6 @@
-// This can be in a separate file
 import * as THREE from 'three';
 
-export function toScreenPosition(obj, camera, renderer) {
+export function toScreenPosition(obj, camera, renderer, parentElement) {
     const vector = new THREE.Vector3();
 
     // Make sure obj is a THREE.Object3D (has a position property)
@@ -19,18 +18,14 @@ export function toScreenPosition(obj, camera, renderer) {
     vector.copy(position); // Copy the position to the vector
     vector.project(camera); // Project the vector to 2D screen space
 
-    // const widthHalf = 0.65 * renderer.domElement.clientWidth;
-    // const heightHalf = 0.65 * renderer.domElement.clientHeight;
     
-    // return {
-    //     x: (vector.x * widthHalf) + widthHalf,
-    //     y: -(vector.y * heightHalf) + heightHalf
-    // };
-    const rect = renderer.domElement.getBoundingClientRect();
+    const parentDom = parentElement.current.getBoundingClientRect();
 
+    const rect = renderer.domElement.getBoundingClientRect();
+    
     return {
-        x: ((vector.x + 1) * rect.width / 2) + rect.left ,
-        y: ((-vector.y + 1) * rect.height / 2) + rect.top
+        x: ((vector.x + 1) * rect.width / 2) + (rect.left - parentDom.left),
+        y: ((-vector.y + 1) * rect.height / 2) + (rect.top - parentDom.top)
     };
   }
 

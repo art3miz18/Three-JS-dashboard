@@ -28,9 +28,10 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
     
     annotations.forEach(annotation => {
       if (annotation && annotation.position) {
-        // Ensure toScreenPosition is imported correctly and works as expected
-        const screenPosition = toScreenPosition(annotation.obj, threeObjects.camera, threeObjects.renderer);
-        newPositions[annotation.id] = screenPosition;
+        if(mountRef.current){
+          const screenPosition = toScreenPosition(annotation.obj, threeObjects.camera, threeObjects.renderer);
+          newPositions[annotation.id] = screenPosition;
+        }
       }
     });
 
@@ -80,47 +81,50 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
   }
 
   useEffect(() => {
-    const { scene, camera, renderer ,controls} = setupScene(); 
-    setThreeObjects({ scene, camera, renderer ,controls});
-    mountRef.current.appendChild(renderer.domElement);
-    loadModel(scene, modelPath, camera,  controls, (onModelLoaded)=>{
-      interactionHandlerRef.current = new InteractionHandler(scene,
-                                                        camera, 
-                                                        renderer, 
-                                                        onModelLoaded, 
-                                                        handlePointClick,
-                                                        historyManager,
-                                                        UpdateUndoRedoAvailability,
-                                                        setAnnotations);
-      getAnnotationData(productId, interactionHandlerRef.current);
-                                                      });
-    setInitialized(true);
-    
-    threeComponentRef.current = (newZoomLevel) =>{
-      setZoomBasedOnSlider(newZoomLevel, scene, camera, controls);
-    };
-    
-    const animate = () => {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-      updateAnnotationPositions();
-    };
-    
-    animate(); 
-    
-    const onWindowResize = () => {
-      const width = mountRef.current.clientWidth;
-      const height = mountRef.current.clientHeight;
-      renderer.setSize(width, height);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      controls.update();       
-      updateAnnotationPositions();
-    };
-    
-    window.addEventListener('resize', onWindowResize, false);
-    onWindowResize();
+    if(mountRef.current){}
 
+      const { scene, camera, renderer ,controls} = setupScene(); 
+      setThreeObjects({ scene, camera, renderer ,controls});
+      mountRef.current.appendChild(renderer.domElement);
+      loadModel(scene, modelPath, camera,  controls, (onModelLoaded)=>{
+        interactionHandlerRef.current = new InteractionHandler(scene,
+                                                                camera, 
+                                                                renderer, 
+                                                                onModelLoaded, 
+                                                                handlePointClick,
+                                                                historyManager,
+                                                                UpdateUndoRedoAvailability,
+                                                                setAnnotations);
+                                                                getAnnotationData(productId, interactionHandlerRef.current);
+                                                              });
+        setInitialized(true);
+        
+        threeComponentRef.current = (newZoomLevel) =>{
+          setZoomBasedOnSlider(newZoomLevel, scene, camera, controls);
+        };
+        
+        const animate = () => {
+          requestAnimationFrame(animate);
+          renderer.render(scene, camera);
+          updateAnnotationPositions();
+        };
+        
+        animate(); 
+        
+        const onWindowResize = () => {
+          const width = mountRef.current.clientWidth;
+          const height = mountRef.current.clientHeight;
+          renderer.setSize(width, height);
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+          controls.update();       
+          updateAnnotationPositions();
+        };
+        
+        window.addEventListener('resize', onWindowResize, false);
+        onWindowResize();
+      
+        
     // Cleanup function to remove the renderer from the DOM and clear event listeners
     return () => {           
         if (mountRef.current && mountRef.current.contains(renderer.domElement)) {
@@ -129,15 +133,16 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
         window.removeEventListener('resize',onWindowResize, false);
         
       };
-    }, [ modelPath, productId, interactionHandlerRef]);
+    }, [modelPath, productId, interactionHandlerRef]); // modelPath, productId, interactionHandlerRef
 
-  return <div ref={mountRef} children class="box-content" style={{ width: '800px', height: '800px'}}>
+  return <div ref={mountRef} children class="box-content" style={{ width: '800px', height: '800px', position:'relative', overflow :'hidden'}}>
     { initialized &&  (
         <>   
         {(interactionHandlerRef.current &&        
           <AnnotationManager  camera = {threeObjects.camera}
                               renderer = {threeObjects.renderer}
-                              annotationPositions = {annotationPositions} />    
+                              annotationPositions = {annotationPositions} 
+                              containerRef = {mountRef}/>    
         )}     
           {showForm && (
             <AnnotationForm
