@@ -1,11 +1,12 @@
 import React, {useContext, useEffect, useState} from 'react';
 import { AnnotationContext } from '../js/AnnotationContext';
 import { toScreenPosition } from '../js/projectionUtils'; // Adjust the import path as needed
-import { annotationToLookAt } from '../three/cameraUtil'
+import { annotationToLookAt } from '../three/cameraUtil';
+import { Vector3 } from 'three';
 
 
-export default function AnnotationManager({ camera, renderer, annotationPositions, containerRef}) {
-  // State to hold the transformed 2D positions of the annotations
+export default function AnnotationManager({ camera, renderer, annotationPositions, containerRef, handlePointClick}) {
+  
   const { annotations } = useContext(AnnotationContext);
   const [positions, setPositions] = useState([]);
 
@@ -15,6 +16,8 @@ export default function AnnotationManager({ camera, renderer, annotationPosition
         annotations.forEach((annotation) => {
           if(annotation && annotation.position){
             const screenPosition = toScreenPosition(annotation.obj, camera, renderer, containerRef);
+            
+            
             newPositions[annotation.id] = screenPosition;
           }
         });
@@ -23,8 +26,7 @@ export default function AnnotationManager({ camera, renderer, annotationPosition
 
   useEffect(() => {
       updatePositions();
-
-  }, [annotationPositions]);
+  }, [annotationPositions, containerRef, renderer, camera]);
 
   return (
     <>
@@ -40,9 +42,11 @@ export default function AnnotationManager({ camera, renderer, annotationPosition
       };
 
       const handleAnnotationClick = (annotation) => {
-        console.log(annotation);
-        annotationToLookAt(annotation.position)
-       
+        console.log(annotation.obj.uuid);
+        if(annotation.obj.userData.HasData){
+          handlePointClick(annotation.id, annotation.position, false);   
+        }     
+        annotationToLookAt(annotation.position, camera);        
       };
 
       return (

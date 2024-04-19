@@ -196,18 +196,7 @@ import { createBoundingBox } from './cameraUtil';class InteractionHandler {
             }
         }
     }
-    // Register Callbacks
-    // onAnnotationsChange(callback) {
-    //     this.onAnnotationChangeCallbacks.push(callback);
-    //     console.log('On Annotation Change',callback);
-    // }
 
-    // emitAnnotationChange= (annotation) => {
-    // this.onAnnotationChangeCallbacks.forEach(callback => callback(annotation));
-    // // console.log    
-    // console.log('emitAnnotationChange', annotation);
-    // }
-    
     createNewAnnotation(uuid, position){
         const sphereGeometry = new THREE.SphereGeometry(this.scale, 32, 32);
         const sphere = new THREE.Mesh(sphereGeometry, this.material);
@@ -227,11 +216,11 @@ import { createBoundingBox } from './cameraUtil';class InteractionHandler {
     
     createAnnotation(annotation, hasData) {
         const sphereGeometry = new THREE.SphereGeometry(this.scale, 20, 20);
-        const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5 });
         const sphere = new THREE.Mesh(sphereGeometry, this.material);      
         sphere.position.set(annotation.position.x, annotation.position.y, annotation.position.z);
         sphere.userData = { IsAnnotationPoint: true, annotationID: annotation.annotationID, HasData: hasData };
         sphere.uuid = annotation.annotationID;
+        sphere.layers.set(1);
         this.scene.add(sphere);
         this.addPoint(sphere);
         
@@ -242,17 +231,13 @@ import { createBoundingBox } from './cameraUtil';class InteractionHandler {
                 details: annotation.title,
                 description: annotation.description,
                 obj: sphere  
-                };
-                // setTimeout(() => this.setAnnotations(prevAnnotations => [...prevAnnotations, newAnnotation]), 0);
-                // console.log('adding annotataion to cunt', annotation);
+                };                
                 this.setAnnotations(prevAnnotations => [...prevAnnotations, newAnnotation]);
-        }
-         
+        }         
         if(!hasData){
             this.ActivePoint = sphere;
             this.handlePointClick(this.ActivePoint.uuid, this.ActivePoint.position, true);
-        }
-        
+        }        
     }
     
     //Add new annotations these is triggered from annotation.js when the data is recieved through the API

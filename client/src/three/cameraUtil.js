@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
 
 const MIN_ZOOM_RATIO = 1; // Closest zoom (half the size of the object)
 const MAX_ZOOM_RATIO = 300; // Farthest zoom (twice the size of the object)
@@ -6,15 +7,20 @@ let OBJ_SIZE = null;
 let OBJ_CENTER = null;
 let Camera = null;
 let Controls = null;
-
+let boundedBox = null;
+let currScene = null;
 
 export const adjustCameraToFitObject = (scene, camera, object, controls) => {
     Camera = camera;
     Controls = controls;
     const {center, size, boundingBox } = createBoundingBox(object, scene);
+    // const {spCenter, sphereBounds, spherr} = createBoundingSphere(object,scene);
+    // console.log('Box Dimensions', size, '\n SphereDimension', sphereBounds);
     OBJ_SIZE = size;
     OBJ_CENTER = center; 
     model = object;
+    currScene = scene;
+    boundedBox = boundingBox;
     const maxDim = Math.max(size.x, size.y, size.z);
     const fov = camera.fov * (Math.PI / 180); //camera.fov = 60 ;
     // console.log('fov :',camera.fov);
@@ -36,16 +42,11 @@ export const adjustCameraToFitObject = (scene, camera, object, controls) => {
     camera.updateProjectionMatrix();
 
     if (controls) {
-
-        // Update controls target to rotate around the center of the object
-        // controls.target = center;  
-
         controls.target.set(center.x, center.y, center.z);
         controls.update();
     }
     camera.lookAt(center);
 };
-
 
 export const createBoundingBox = (object, scene) => {
     const boundingBox = new THREE.Box3().setFromObject(object);
@@ -59,6 +60,35 @@ export const createBoundingBox = (object, scene) => {
     boxHelper.update();
     return {center, size, boundingBox};
 };
+export const createBoundingSphere = (object, scene) => {
+  // Compute the bounding sphere based on the object's geometry
+  object.geometry.computeBoundingSphere();
+  const boundingSphere = object.geometry.boundingSphere.clone();
+
+  // Create a visual representation of the bounding sphere (optional)
+  const sphereMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffff00, // Yellow color for the sphere
+      wireframe: true,
+      transparent: true,
+      opacity: 0.5
+  });
+  const sphereMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(boundingSphere.radius, 32, 32),
+      sphereMaterial
+  );
+  sphereMesh.position.copy(boundingSphere.center);
+  sphereMesh.layers.set(1); // Set the same layer as the box helper was using
+  scene.add(sphereMesh);
+  sphereMesh.updateMatrix(); // Ensure the sphere mesh updates to reflect the object's transformations
+
+  // Return necessary data for further processing
+  return {
+      center: boundingSphere.center,
+      radius: boundingSphere.radius,
+      boundingSphere: boundingSphere,
+  };
+};
+
 
 let model = null;
 
@@ -115,7 +145,6 @@ export const calculateScaleFactor = ( camera, rendererDomElement) => {
     
     // Calculate the new camera position based on the zoom ratio
     let cameraZ = Math.abs(maxDim / 2 * Math.tan(fov * 2)) * zoomRatio;
-    // camera.position.z = center.z + cameraZ;
     camera.zoom = zoomRatio;  
     camera.updateProjectionMatrix();  
     if (controls) {
@@ -124,64 +153,129 @@ export const calculateScaleFactor = ( camera, rendererDomElement) => {
     camera.lookAt(center);
   };
    
-  export const annotationToLookAt = (annotationPosition) =>{
-    // Assuming 'annotationPosition' is a THREE.Vector3
-    console.log('camera postion before lerping' , Camera.position);
-    const targetPosition = annotationPosition; // or apply an offset if needed
-    const offsetPosition = new THREE.Vector3(0, 0, 10); // Adjust the values as needed
-
-    // Calculate the camera position by pulling back along the camera's local Z-axis
-    const newCameraPosition = targetPosition.clone.add(offsetPosition.applyQuaternion(Camera.quaternion));
-
-    // Start values for interpolation
-    const startCameraPosition = Camera.position.clone();
-    const startCameraQuaternion = Camera.quaternion.clone();
-
-    // // Target values for quaternion slerp
-    // const endCameraQuaternion = new THREE.Quaternion().setFromUnitVectors(Camera.up, new THREE.Vector3(0, 1, 0)).multiply(new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(newCameraPosition, targetPosition, Camera.up)));
-
-    // Calculate the desired end rotation to look at the target
-    const desiredLookAtQuaternion = new THREE.Quaternion().setFromRotationMatrix(
-      new THREE.Matrix4().lookAt(newCameraPosition, targetPosition, Camera.up)
-    );
-
-
-    // Animation variables
-    let t = 0; // Interpolation parameter [0,1]
-    const duration = 1000; // Duration of the animation in milliseconds
-
-    function animateCamera(time) {
-      requestAnimationFrame(animateCamera);
-
-      // Update the interpolation parameter      
-      t += (time - lastTime) / duration;
-
-      if (t < 1) {
-        // Interpolate position
-        Camera.quaternion.slerpQuaternions(startCameraPosition, newCameraPosition, t);
-
-        // Linear interpolation of the position
-        Camera.position.lerpVectors(startCameraPosition, newCameraPosition, t);
-
-        // Update the camera matrix
-        // Camera.updateMatrixWorld();
-        Camera.updateProjectionMatrix();
-        Controls.update();
-      } else {
-        // Ensure the final values are set
-        Camera.quaternion.copy(desiredLookAtQuaternion);
-        Camera.position.copy(newCameraPosition);
-        Camera.updateMatrixWorld();
-        Controls.update();       
-        // Stop the animation when t >= 1
-        return;
-      }      
-      lastTime = time;
-    }
-    
-    
-    let lastTime = performance.now();
-    requestAnimationFrame(animateCamera);
-    console.log('camera postion before lerping' , Camera.position);
+  export const annotationToLookAt = (annotationPosition, camera) =>{
+    const targetPosition = new THREE.Vector3(annotationPosition.x, annotationPosition.y, annotationPosition.z); // or apply an offset if needed
+    const offsetPosition = new THREE.Vector3(0, 0, 0); // Adjust the values as needed
+    offsetPosition.z += OBJ_SIZE.x ;       
+    const newCameraPosition = findNearestPointOnBoundingBox(boundedBox ,targetPosition);
+    // UpdatePointVisual(newCameraPosition);
+    smoothTransitionTo(camera, newCameraPosition, targetPosition, Controls ); 
 
   };
+
+  function smoothTransitionTo(camera, newPosition, targetPosition, controls) {
+      const tweenCamera = new TWEEN.Tween(camera.position)
+          .to(newPosition, 700)
+          .onUpdate(() =>{
+            camera.lookAt(targetPosition);
+            controls.update();            
+          } )
+          .easing(TWEEN.Easing.Cubic.InOut)
+          .onComplete(() => {
+            // camera.lookAt(targetPosition);
+            // controls.target.set(targetPosition);
+          })
+          .start();
+
+      function renderLoop() {
+          requestAnimationFrame(renderLoop);
+          TWEEN.update();
+      }
+      renderLoop();
+  }
+  
+  // Function to find the nearest point on the bounding box to a given target position
+  function findNearestPointOnBoundingBox(boundingBox, targetPosition ) {    
+
+      const boxCenter = boundingBox.getCenter(new THREE.Vector3());
+      const directionToTarget = new THREE.Vector3().subVectors(targetPosition, boxCenter).normalize();
+      const distanceToCenter = boundingBox.getSize(new THREE.Vector3()).length() * 0.5; // Half the diagonal of the box
+      return boxCenter.addScaledVector(directionToTarget, distanceToCenter);
+
+  }  
+  
+  let visual = null;
+
+  function UpdatePointVisual(positionData){
+    console.log('updating pos', positionData);
+    if(!visual){
+      const sphereGeometry = new THREE.SphereGeometry(10, 32, 32);
+      const material = new THREE.MeshBasicMaterial({ color: 0x0000ff});
+      visual = new THREE.Mesh(sphereGeometry, material);
+      visual.position.copy(positionData);
+      currScene.add(visual);
+      console.log('updating pos', visual);
+    }
+    else {
+      visual.position.copy(positionData);
+    }
+}
+  
+  
+  //#region LookAtPoint Function 
+  // export const annotationToLookAt = (annotationPosition) =>{
+  //   const targetPosition = new THREE.Vector3(annotationPosition.x, annotationPosition.y, annotationPosition.z); // or apply an offset if needed
+  //   // console.log( annotationPosition);
+  //   const offsetPosition = new THREE.Vector3(0, 0, 0); // Adjust the values as needed
+  //   offsetPosition.z += (OBJ_SIZE.x * 0.5);
+  //   // console.log( 'New camera pos', offsetPosition);
+
+  //   const newCameraPosition = targetPosition.clone().add(offsetPosition.applyQuaternion(Camera.quaternion));    
+  //   const startCameraPosition = Camera.position.clone();
+  //   console.log( 'Start camera pos', startCameraPosition, Camera.position);
+  //   console.log( 'New camera pos', newCameraPosition);
+
+    
+  //   const desiredLookAtQuaternion = new THREE.Quaternion().setFromRotationMatrix(
+  //   new THREE.Matrix4().lookAt(newCameraPosition, targetPosition, Camera.up)
+  //   );
+
+
+  //   let t = 0; // Interpolation parameter [0,1]
+  //   const duration = 1000; // Duration of the animation in milliseconds
+
+  //   function animateCamera(time) {
+      
+  //     // Update the interpolation parameter      
+  //     t += (time - lastTime) / duration;
+  //     // console.log('t ',t);
+  //     if (t < 1) {
+  //       // requestAnimationFrame(animateCamera);
+  //       animationFrameId = requestAnimationFrame(animateCamera);
+  //       // Interpolate position
+  //       Camera.quaternion.slerpQuaternions(startCameraPosition, newCameraPosition, t);
+
+  //       // Linear interpolation of the position
+  //       Camera.position.lerpVectors(startCameraPosition, newCameraPosition, t);
+  //       Camera.lookAt(targetPosition);
+  //       // Update the camera matrix
+  //       // Camera.updateMatrixWorld();
+  //       Camera.updateProjectionMatrix();
+  //       Controls.update();
+  //     } else if(t > 1) {
+  //       // Ensure the final values are set
+  //       Camera.quaternion.copy(desiredLookAtQuaternion);
+  //       Camera.position.copy(newCameraPosition);
+  //       Camera.lookAt(targetPosition);
+  //       Camera.updateMatrixWorld();
+  //       Controls.update();       
+  //       // Stop the animation when t >= 1
+  //       console.log('camera postion after lerping' , Camera.position);
+  //       return;
+  //     }      
+  //     lastTime = time;
+  //   }
+    
+  //   function animateCamera(time){
+  //     requestAnimationFrame(animateCamera);
+  //     TWEEN.update(time);
+  //     Camera.updateProjectionMatrix();
+  //     Controls.update();
+  //   }
+
+  //   let animationFrameId;
+  //   let lastTime = performance.now();
+  //   requestAnimationFrame(animateCamera);
+
+  // };
+  //#endregion

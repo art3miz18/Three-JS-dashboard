@@ -19,7 +19,6 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
   const [threeObjects, setThreeObjects] = useState({ scene: null, camera: null, renderer: null, controls: null });
   const { annotations ,setAnnotations } = useContext(AnnotationContext);
   
-  // You may want to maintain a state for annotation positions in ThreeContainer
   const [annotationPositions, setAnnotationPositions] = useState({});
 
   // Add a function to update annotation positions
@@ -36,10 +35,11 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
     });
 
     setAnnotationPositions(newPositions);
-  }, [annotations]);
+  }, []);
 
 
   const handlePointClick = (point, position, isNewPoint) => {
+    console.log('has data ',isNewPoint, showForm);
     if(!showForm){
       setSelectedPoint(point);
       setPosition(position);
@@ -47,7 +47,8 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
       if(!isNewPoint){
         const annotationID = point;
         getAnnotationById(productId, annotationID).then( annotationData=>{
-        setAnnotationData(annotationData);
+          setAnnotationData(annotationData);
+          console.log('Annotation Data', annotationData);
         });
       }
       else{
@@ -95,7 +96,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
                                                                 historyManager,
                                                                 UpdateUndoRedoAvailability,
                                                                 setAnnotations);
-                                                                getAnnotationData(productId, interactionHandlerRef.current);
+          getAnnotationData(productId, interactionHandlerRef.current);
                                                               });
         setInitialized(true);
         
@@ -107,6 +108,8 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
           requestAnimationFrame(animate);
           renderer.render(scene, camera);
           updateAnnotationPositions();
+          camera.updateProjectionMatrix();
+          controls.update();
         };
         
         animate(); 
@@ -142,7 +145,8 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
           <AnnotationManager  camera = {threeObjects.camera}
                               renderer = {threeObjects.renderer}
                               annotationPositions = {annotationPositions} 
-                              containerRef = {mountRef}/>    
+                              containerRef = {mountRef}
+                              handlePointClick = {handlePointClick}/>    
         )}     
           {showForm && (
             <AnnotationForm
