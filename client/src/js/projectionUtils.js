@@ -29,4 +29,10 @@ export function toScreenPosition(obj, camera, renderer, parentElement) {
     };
   }
 
+  export function getDepth (object, camera) {
+    const vector = new THREE.Vector3();
+    vector.setFromMatrixPosition(object.matrixWorld);
+    vector.project(camera);
+    return vector.z;
+  };
   

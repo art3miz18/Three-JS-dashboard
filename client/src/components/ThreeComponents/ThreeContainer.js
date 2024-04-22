@@ -40,7 +40,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
 
   const handlePointClick = (point, position, isNewPoint) => {
     console.log('has data ',isNewPoint, showForm);
-    if(!showForm){
+    
       setSelectedPoint(point);
       setPosition(position);
       setShowForm(true);
@@ -55,7 +55,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
         const nullData = '';
         setAnnotationData(nullData);
       }
-    }
+    
   };
 
   const handleSaveAnnotation = async ( id ) => {    
