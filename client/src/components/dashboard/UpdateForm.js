@@ -3,7 +3,7 @@ import React, { useState, useEffect} from 'react';
 import productServices from '../../services/productServices';
 
 
-const UpdateForm = ({ product, onSave}) => {
+const UpdateForm = ({ product, onSave, viewAR}) => {
   const [name ,setName] = useState('');
   const [description ,setDescription] = useState('');
   const [endPointURL ,setEndpointUrl] = useState('');
@@ -32,6 +32,10 @@ const UpdateForm = ({ product, onSave}) => {
     onSave({ ...updatedProduct });
   };
   
+  const ViewInAR = () =>{
+    viewAR(true);
+  };
+
   return (
     <form onSubmit={handleSubmit} class = "container mx-auto" >
       <h1>Edit Product</h1>
@@ -56,6 +60,7 @@ const UpdateForm = ({ product, onSave}) => {
       <label  class="block text-sm font-medium leading-6 text-gray-900 my-4">All Products URL</label>
         <p>{allProducts}</p>
       <button type ="submit"  class="inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-8">Save Changes</button>
+      <button onClick={ViewInAR} class="inline-flex items-center rounded-md bg-purple-900 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-8 mx-8">View in AR</button>
 
     </form>
   );

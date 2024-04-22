@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 export function toScreenPosition(obj, camera, renderer, parentElement) {
+  if(!renderer) return;
     const vector = new THREE.Vector3();
 
     // Make sure obj is a THREE.Object3D (has a position property)

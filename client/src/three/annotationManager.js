@@ -67,49 +67,13 @@ export default function AnnotationManager({ camera, renderer, annotationPosition
  
       return (
         <div onClick={ handleAnnotationClick}
-          class="flex flex-row rounded-full px-4 bg-gray-800 hover:bg-white  border-0 py-1.5 shadow-sm  cursor-pointer " 
+          class="flex flex-row rounded-full px-4 bg-transparent bg-gray-800 hover:bg-white  border-0 py-1.5 shadow-sm  cursor-pointer opacity-25 hover:opacity-100 transition-opacity duration-300" 
           style={annotationStyle}>
           <p class="bg-blue-600 rounded-full h-6 w-6 justify-items-start "></p>
-          <h3 class="text-blue-300 font-sans font-semibold justify-items-end mx-2" >{position.details}</h3>
+          <h3 class="text-blue-600 font-sans font-semibold justify-items-end mx-2" >{position.details}</h3>
         </div>
       );
     })}
   </>
   );
-}
-
-
-// Prev
-// return (
-//   <>
-//   {annotations.map((annotation) => {
-//     const screenPosition = positions[annotation.id];
-//     if (!annotation || !screenPosition) return null; 
-    
-    
-//     const annotationStyle = {
-//       position: 'absolute',
-//       left: `${positions[annotation.id]?.x}px` || '0px',
-//       top: `${positions[annotation.id]?.y}px` || '0px',
-//       zIndex: Math.round((1 - annotation.depth) * 1000), // Adjust the z-index based on depth
-//     };
-
-//     const handleAnnotationClick = (annotation) => {
-//       console.log(annotation.obj.uuid);
-//       if(annotation.obj.userData.HasData){
-//         handlePointClick(annotation.id, annotation.position, false);   
-//       }     
-//       annotationToLookAt(annotation.position, camera);        
-//     };
-
-//     return (
-//       <div onClick={() => handleAnnotationClick(annotation)}
-//         class="flex flex-row rounded-full px-4 bg-gray-800 hover:bg-white  border-0 py-1.5 shadow-sm  cursor-pointer " 
-//         style={annotationStyle}>
-//         <p class="bg-blue-600 rounded-full h-6 w-6 justify-items-start "></p>
-//         <h3 class="text-blue-300 font-sans font-semibold justify-items-end mx-2" >{annotation.details}</h3>
-//       </div>
-//     );
-//   })}
-// </>
-// );
+} 

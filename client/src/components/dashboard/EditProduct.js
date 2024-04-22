@@ -5,6 +5,8 @@ import ThreeContainer from '../ThreeComponents/ThreeContainer';
 import UpdateForm from './UpdateForm'
 import { HistoryManager } from '../../three/historyManager';
 import { AnnotationProvider } from '../../js/AnnotationContext';
+// import { ModelViewerComponent } from '../ThreeComponents/ModelViewAR'
+import  ModelViewerComponent  from '../ThreeComponents/ModelViewAR'
 
 const EditProduct = () => {
   const { id } = useParams(); // This will get the product id from the URL
@@ -22,6 +24,7 @@ const EditProduct = () => {
   const [canRedo, setCanRedo] = useState(false);
   // Zoom level
   const [zoomLevel, setZoomLevel] = useState(0.5);
+  const [isModalOpen, setModalOpen] = useState(false);
   
   useEffect(() => {
     
@@ -92,6 +95,13 @@ const EditProduct = () => {
     }
   };
   
+  const HandleModalClose = () => {
+    setModalOpen(false);
+    console.log('modal closed');
+  }
+  const viewAR = (shouldOpen) => {
+    setModalOpen(shouldOpen);
+  };
   return (
     <div class ="flex flex-row">
       <div class = "basis-1/2 h-700 w-700">
@@ -143,8 +153,23 @@ const EditProduct = () => {
         <UpdateForm
           product={product}
           onSave={handleSave}
+          viewAR={viewAR}
         />      
       </div>
+
+      {isModalOpen && product && 
+        <div>
+          <button type="button" onClick={ HandleModalClose }>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </button>
+          <ModelViewerComponent source={product.modelFile}/>
+          {/* <model-viewer src={product.modelFile} ar camera-controls></model-viewer> */}
+        </div>
+      }
+
+
     </div>
   );
 }; 
