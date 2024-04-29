@@ -18,7 +18,7 @@ const EditProduct = () => {
   const threeComponentRef = useRef(null);
   const historyRef = useRef(null);  
   const newEditMode = !isEditMode;
-
+  
   // In EditProduct component
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -158,14 +158,14 @@ const EditProduct = () => {
       </div>
 
       {isModalOpen && product && 
-        <div>
-          <button type="button" onClick={ HandleModalClose }>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-          </button>
-          <ModelViewerComponent source={product.modelFile}/>
-          {/* <model-viewer src={product.modelFile} ar camera-controls></model-viewer> */}
+        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 ">
+            <button type="button" onClick={ HandleModalClose }
+            className=" absolute top-0 right-0">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </button>
+            <ModelViewerComponent source={product.modelFile}/>
         </div>
       }
 
