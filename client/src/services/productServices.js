@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let API_URL = ''; // Update with the correct API endpoint
+let API_URL = 'https://three-js-dashboard.onrender.com/api/products/'; // Update with the correct API endpoint
 
 
 const setBaseUrlProd = (url) => {

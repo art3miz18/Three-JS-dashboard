@@ -14,7 +14,7 @@ import productServices from '../services/productServices';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const serverDetails = useAPI();
+  const serverDetails = ""; //useAPI()
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -28,7 +28,7 @@ function App() {
       }
     };
     
-    initializeApp();
+    // initializeApp();
     
     // Check for a token in local storage and update isAuthenticated accordingly
   const token = localStorage.getItem('user');
@@ -38,7 +38,7 @@ function App() {
     // navigate('/dashboard');
   }
   // console.log('token found state', isAuthenticated);
-  }, [isAuthenticated, serverDetails]);
+  }, [isAuthenticated]);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
