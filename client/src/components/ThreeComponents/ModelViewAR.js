@@ -8,7 +8,7 @@ const ModelViewerComponent = ({source}) => {
       ar-modes="webxr scene-viewer quick-look"
       auto-rotate
       camera-controls
-    //   style={{ width: '100%', height: '400px' }}
+      style={{ width: '800px', height: '800px' }}
     >        
     </model-viewer>
   );

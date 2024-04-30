@@ -23,7 +23,7 @@ const Dashboard = () => {
   };
 
   //Update Product details
-  const EditProduct = (product) =>{
+  const editProduct = (product) =>{
     setSelectedProductId(product._id);
     navigate(`/edit-product/${product._id}`);
   };
@@ -47,7 +47,7 @@ const Dashboard = () => {
       </nav>     
 
       {view === 'addProduct' && <AddProductForm />}
-      {view === 'product' && <ProductList onEdit={EditProduct} onDelete={DeleteProduct} refreshTrigger={refreshTrigger} />}
+      {view === 'product' && <ProductList onEdit={editProduct} onDelete={DeleteProduct} refreshTrigger={refreshTrigger} />}
       {view === 'editProduct' && selectedProductId && <EditProduct productId={selectedProductId} />}
       
     </div>
