@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let API_URL = '';
+let API_URL = 'https://three-js-dashboard.onrender.com/api/users/';
 
 //setting baseURL for localTesting should be ommitted when working on production
 const setBaseUrl = (url) => {
