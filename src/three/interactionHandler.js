@@ -49,14 +49,18 @@ import { createBoundingBox } from './cameraUtil';class InteractionHandler {
         const raycaster = new THREE.Raycaster();
         // const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.5});
         const mouse = new THREE.Vector2(); // Get the bounding rectangle of the canvas
-        const rect = this.renderer.domElement.getBoundingClientRect();
+        let rect = this.renderer.domElement.getBoundingClientRect();
         let isDragging = false;
         let highlightMesh = null;
         let HIGHLIGHT_LAYER = 1;
         
+        const updateRect = () => {
+            rect = this.renderer.domElement.getBoundingClientRect();
+        };
         const onMouseDown = (event) => {
             event.preventDefault();
             if(this.isEditMode){
+                updateRect();
                 const x = event.clientX - rect.left; // Mouse x relative to the canvas
                 const y = event.clientY - rect.top; // Mouse y relative to the canvas
                 mouse.x = (x / rect.width ) * 2 - 1;
@@ -72,7 +76,7 @@ import { createBoundingBox } from './cameraUtil';class InteractionHandler {
         const onMouseMove = (event) => {
             event.preventDefault();
             if(this.isEditMode){
-
+                updateRect();
                 const x = event.clientX - rect.left; // Mouse x relative to the canvas
                 const y = event.clientY - rect.top; // Mouse y relative to the canvas
                 // const mouse = new THREE.Vector2();

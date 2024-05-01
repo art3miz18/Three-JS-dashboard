@@ -1,27 +1,54 @@
+import React, {useEffect} from "react";
 import "@leoncvlt/ar-button"
 import "@leoncvlt/ar-button/styles.css"
-const testPath = "https://meta-3d-new.s3.ap-south-1.amazonaws.com/3dModel.glb";
 
 const ModelViewerComponent = ({source}) => {
-  return (
-    <model-viewer
-      src={testPath}
-      ar
-      ar-modes="webxr scene-viewer quick-look"
-      auto-rotate
-      camera-controls
-      style={{ width: '800px', height: '800px' }}
-    >        
-    </model-viewer>
 
+  useEffect(() =>{
+    const arButton = document.querySelector('ar-button');
+    if (arButton) {
+        arButton.addEventListener('click', () => {
+          console.log('AR button clicked!');
+      });
+    }
+    
+    return () => {
+      if (arButton) {
+        arButton.removeEventListener('click', () => {
+          console.log('AR button clicked!');
+        });
+      }
+    };
+  }, []);
+  return (
+    
+      <model-viewer
+        src={source}
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        auto-rotate
+        camera-controls
+        style={{ width: '800px', height: '800px' }}
+      >        
+      </model-viewer>
+      
+      // <ar-button
+      //   src={source}
+      //   ios-src={source}
+      //   link="https://threejs-dashboard.netlify.app/"
+      //   title="AR demo">
+      //   See in Augmented Reality 
+      // </ar-button>
     // <ar-button
     //   src={source}
     //   ios-src={source}
     //   link="https://www.nasa.gov/"
-    //   title="3D product Demo">
+    //   title={title}
+    // >
     //     See in Augmented Reality 
     // </ar-button>
 
+    
   );
 };
 

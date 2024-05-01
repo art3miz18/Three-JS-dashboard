@@ -1,9 +1,8 @@
 {
-  
-  "name": "threejs-app",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
+    "name": "threejs-app",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.1.1",
     "@leoncvlt/ar-button": "^0.3.0",
@@ -23,7 +22,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=3000 && react-scripts start",
     "build": "react-scripts build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d -build",
@@ -37,18 +36,17 @@
     ]
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "production": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "development": [
+    "last 1 chrome version",
+    "last 1 firefox version",
+    "last 1 safari version"
+  ]
   },
-  "proxy": "http://localhost:3001",
   "devDependencies": {
     "gh-pages": "^6.1.1"
   }

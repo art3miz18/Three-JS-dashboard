@@ -1,8 +1,5 @@
-
 import React, { useState, useEffect} from 'react';
 import productServices from '../../services/productServices';
-import "@leoncvlt/ar-button"
-import "@leoncvlt/ar-button/styles.css"
 
 const UpdateForm = ({ product, onSave, viewAR}) => {
   const [name ,setName] = useState('');
@@ -33,15 +30,6 @@ const UpdateForm = ({ product, onSave, viewAR}) => {
     onSave({ ...updatedProduct });
   };
   
-
-  // const ActivateAR = () =>{
-  //   activateAR({
-  //     src: "https://github.com/leoncvlt/ar-button/raw/master/assets/Astronaut.glb",
-  //     iosSrc: "https://github.com/leoncvlt/ar-button/raw/master/assets/Astronaut.usdz",
-  //     link: "https://www.nasa.gov/",
-  //     title: "A 3D model of an astronaut"
-  //   })
-  // };
   const ViewInAR = () =>{
     viewAR(true);
   };
@@ -72,16 +60,7 @@ const UpdateForm = ({ product, onSave, viewAR}) => {
       <button type ="submit"  class="inline-flex items-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-8">Save Changes</button>
       <button onClick={ViewInAR} class="inline-flex items-center rounded-md bg-purple-900 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-8 mx-8">View in AR</button>
       
-      {/* {product &&
       
-        <ar-button
-          src={product.modelFile}
-          ios-src={product.modelFile}
-          link="https://www.nasa.gov/"
-          title="3D product Demo">
-            See in Augmented Reality 
-        </ar-button>
-      } */}
     </form>
   );
 };

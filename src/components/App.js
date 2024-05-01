@@ -7,29 +7,16 @@ import EditProduct from './dashboard/EditProduct';
 import LoginForm from './auth/LoginForm';
 import PrivateRoute from './common/PrivateRoute';
 import AuthContext from '../context/AuthContext'; // Assuming you've created this context
-import { useAPI } from './common/APIcontext';
-import authServices from '../services/authServices';
-import productServices from '../services/productServices';
+// import { useAPI } from './common/APIcontext';
+// import authServices from '../services/authServices';
+// import productServices from '../services/productServices';
 
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const serverDetails = ""; //useAPI()
+  
 
   useEffect(() => {
-    const initializeApp = async () => {
-      if (serverDetails) {
-        console.log('server Details', serverDetails);
-        authServices.setBaseUrl(serverDetails);
-        productServices.setBaseUrlProd(serverDetails);
-      }
-      else{
-        console.log('serverDetails are null');
-      }
-    };
-    
-    // initializeApp();
-    
     // Check for a token in local storage and update isAuthenticated accordingly
   const token = localStorage.getItem('user');
   setIsAuthenticated(!!token);

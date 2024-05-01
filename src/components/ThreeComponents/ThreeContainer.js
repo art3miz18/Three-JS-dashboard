@@ -96,6 +96,7 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
                                                                 historyManager,
                                                                 UpdateUndoRedoAvailability,
                                                                 setAnnotations);
+                                                                
           getAnnotationData(productId, interactionHandlerRef.current);
                                                               });
         setInitialized(true);
