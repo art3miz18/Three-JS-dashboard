@@ -1,25 +1,33 @@
-import React, {useEffect} from "react";
-import "@leoncvlt/ar-button"
-import "@leoncvlt/ar-button/styles.css"
+// import React,{useEffect, useRef} from "react";
+// import "@leoncvlt/ar-button"
+// import "@leoncvlt/ar-button/styles.css"
 
 const ModelViewerComponent = ({source}) => {
+  // const arButtonRef = useRef(null);
 
-  useEffect(() =>{
-    const arButton = document.querySelector('ar-button');
-    if (arButton) {
-        arButton.addEventListener('click', () => {
-          console.log('AR button clicked!');
-      });
-    }
-    
-    return () => {
-      if (arButton) {
-        arButton.removeEventListener('click', () => {
-          console.log('AR button clicked!');
-        });
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   const arButton = document.querySelector('ar-button');
+
+  //   const handleInitialized = (event) => {
+  //     if (event.detail === 'unsupported') {
+  //       console.log('AR is not supported on this device');
+  //     } else {
+  //       console.log('AR initialized with backend:', event.detail);
+  //     }
+  //   };
+
+  //   if (arButton) {
+  //     arButton.addEventListener('initialized', handleInitialized);
+  //   }
+
+  //   // Cleanup the event listener when the component unmounts
+  //   return () => {
+  //     if (arButton) {
+  //       arButton.removeEventListener('initialized', handleInitialized);
+  //     }
+  //   };
+  // }, []);  
+
   return (
     
       <model-viewer
@@ -28,27 +36,18 @@ const ModelViewerComponent = ({source}) => {
         ar-modes="webxr scene-viewer quick-look"
         auto-rotate
         camera-controls
-        style={{ width: '800px', height: '800px' }}
+        style={{ width: '100%', height: '100%' }}
       >        
       </model-viewer>
       
       // <ar-button
+      //   ref = {arButtonRef}
       //   src={source}
       //   ios-src={source}
       //   link="https://threejs-dashboard.netlify.app/"
       //   title="AR demo">
       //   See in Augmented Reality 
-      // </ar-button>
-    // <ar-button
-    //   src={source}
-    //   ios-src={source}
-    //   link="https://www.nasa.gov/"
-    //   title={title}
-    // >
-    //     See in Augmented Reality 
-    // </ar-button>
-
-    
+      // </ar-button>       
   );
 };
 

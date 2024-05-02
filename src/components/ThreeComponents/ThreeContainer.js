@@ -39,7 +39,6 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
 
 
   const handlePointClick = (point, position, isNewPoint) => {
-    console.log('has data ',isNewPoint, showForm);
     
       setSelectedPoint(point);
       setPosition(position);
@@ -48,7 +47,6 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
         const annotationID = point;
         getAnnotationById(productId, annotationID).then( annotationData=>{
           setAnnotationData(annotationData);
-          console.log('Annotation Data', annotationData);
         });
       }
       else{
@@ -73,7 +71,6 @@ const ThreeContainer = ({ modelPath, productId, interactionHandlerRef, historyMa
 
   const handleEditPoint = (EditID) =>{
     interactionHandlerRef.current.editActivePoint(EditID);
-    console.log('Editing is clicked');
   }
 
   const handleDeletePoint = (deleteID) =>{

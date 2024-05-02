@@ -100,6 +100,7 @@ const EditProduct = () => {
   }
   const viewAR = (shouldOpen) => {
     setModalOpen(shouldOpen);
+    console.log('product file', product.modelFile);
   };
   return (
     <div class ="flex flex-row">

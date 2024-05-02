@@ -5,7 +5,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 let controls;
 
 export const setupScene = () => {
-  console.log('scene initialiatised');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color().setHSL( 0.8, 0, 0.8 );   
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
