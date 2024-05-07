@@ -1,6 +1,6 @@
 import React, { useEffect, useRef , useState} from 'react';
 import { setupScene } from '../three/setupScene';
-import { loadModelFromFile } from '../three/loadModel';
+import { loadModelFromFile, validateModel } from '../three/loadModel';
 import DragAndDrop from '../three/dragAndDrop';
 
 
@@ -11,7 +11,8 @@ function App() {
 
   const handleModelLoaded = (file) =>{
     if (threeObjects.scene && threeObjects.camera && threeObjects.controls) {
-      loadModelFromFile(file, threeObjects.camera, threeObjects.scene, threeObjects.controls);
+      // loadModelFromFile(file, threeObjects.camera, threeObjects.scene, threeObjects.controls);
+      console.log('callback received the file is being loaded');
     }
   };
 
