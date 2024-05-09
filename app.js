@@ -11,7 +11,7 @@ const path = require('path');
 
 // Middlewares
 app.use(cors({
-origin: 'http://192.168.0.124:3000'
+origin: '*' //allow all origins
               }));
 app.use(express.json()); // for parsing application/json
 app.use('/api/products', productRoutes); //  product routes
