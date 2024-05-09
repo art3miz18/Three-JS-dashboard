@@ -10,9 +10,7 @@ const app = express();
 const path = require('path');
 
 // Middlewares
-app.use(cors({
-origin: '*' //allow all origins
-              }));
+app.use(cors());
 app.use(express.json()); // for parsing application/json
 app.use('/api/products', productRoutes); //  product routes
 app.use('/api/users', users); // user routes
