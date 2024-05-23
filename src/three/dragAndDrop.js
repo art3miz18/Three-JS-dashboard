@@ -5,6 +5,7 @@ const DragAndDrop = ({onModelLoaded, scene, camera, controls}) => {
   const [isDragging, setIsDragging] = useState(false);  
   const [fileLoaded, setFileLoaded] = useState(false);  
   const cleanupInteractionRef = useRef(null);
+  const fileInputRef = useRef(null);
   let modelFile = null;
 
   useEffect(() => {
@@ -38,6 +39,7 @@ const DragAndDrop = ({onModelLoaded, scene, camera, controls}) => {
       setFileLoaded(true); 
     };
 
+    
     // Add event listeners to the document
     document.addEventListener('dragover', handleDragOver);
     document.addEventListener('drop', handleDrop);
@@ -56,13 +58,46 @@ const DragAndDrop = ({onModelLoaded, scene, camera, controls}) => {
     };
   }, []); //scene, camera, controls, onModelLoaded, handlePointClick
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      loadModelFromFile(file, camera, scene, controls, (loadedModel) => {
+        setFileLoaded(true);
+        modelFile = loadedModel;
+      });
+      if (typeof onModelLoaded === 'function') {
+        onModelLoaded();
+      }
+    }
+  };
+
+  const handleClick = () => {
+    fileInputRef.current.click();
+  };
+
   return (
     <div
       className={`drop-zone ${isDragging ? 'drag-over' : ''}`}
       style={{
         display: fileLoaded ? 'none' : 'flex', // Hide after file is loaded
         // Additional styles here
-      }}>
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100vh',
+        border: '2px dashed #ccc',
+        borderRadius: '10px',
+        cursor: 'pointer'
+      }}
+        onClick={handleClick}
+      >
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
         <lottie-player
         src="https://lottie.host/179750b7-1f47-40ce-9274-0eff47e3885c/rlZg6Efq3f.json"
         background="transparent"
