@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { loadModelFromFile } from './loadModel';
+import { loadModelFromFile, validateModel } from './loadModel';
 
 const DragAndDrop = ({onModelLoaded, scene, camera, controls}) => { 
   const [isDragging, setIsDragging] = useState(false);  
@@ -14,13 +14,23 @@ const DragAndDrop = ({onModelLoaded, scene, camera, controls}) => {
       setIsDragging(false);
       const file = event.dataTransfer.files[0];
       if (file) {
-        loadModelFromFile(file, camera, scene, controls,(loadedModel)=>{
-          setFileLoaded(true);
-          modelFile = loadedModel;        
+        validateModel(file, (isValid, message) => {
+          if (isValid) {
+            console.log('Validation successful:', message);
+            // Proceed to load the model into the scene if it is valid
+            if (typeof onModelLoaded === 'function'){
+              onModelLoaded();
+            } 
+            
+          } else {
+            console.error('Model validation failed:', message);
+            // Handle the error, e.g., alerting the user or logging the issue
+          }
         });
-        if (typeof onModelLoaded === 'function'){
-          onModelLoaded();
-        } 
+        // loadModelFromFile(file, camera, scene, controls,(loadedModel)=>{
+        //   setFileLoaded(true);
+        //   modelFile = loadedModel;        
+        // });
       }
     };
 

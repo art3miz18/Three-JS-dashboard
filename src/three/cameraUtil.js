@@ -32,6 +32,7 @@ export const adjustCameraToFitObject = (scene, camera, object, controls) => {
         controls.update();
     }
     camera.lookAt(center);
+    // console.log("Camera loaded :",cameraZ);
 };
 
 
